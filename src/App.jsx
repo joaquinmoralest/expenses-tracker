@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import './App.css'
-import ProgressBar from './components/ProgressBar/ProgressBar'
+import ProgressBar from './components/ProgressBar'
 
 function App() {
+  const [remaining, setRemainig] = useState(100)
+
   return (
     <div className="App">
       <div className='title'>
@@ -24,8 +27,8 @@ function App() {
         <section className='budget'>
           <h4 className='txt-center'>Presupuesto</h4>
           <ProgressBar 
-            bgColor='full'
-            completed={90}
+            // bgColor='full'
+            remaining={remaining}
           />
           <h4 className='txt-center'>Ingresos</h4>
           <form className='form' action="">
