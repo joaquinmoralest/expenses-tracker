@@ -1,4 +1,5 @@
 import './App.css'
+import ProgressBar from './components/ProgressBar/ProgressBar'
 
 function App() {
   return (
@@ -22,6 +23,11 @@ function App() {
         </section>
         <section className='budget'>
           <h4 className='txt-center'>Presupuesto</h4>
+          <ProgressBar 
+            bgColor='full'
+            completed={90}
+          />
+          <h4 className='txt-center'>Ingresos</h4>
           <form className='form' action="">
             <input className='input' type="text" />
             <button className='btn-add'>

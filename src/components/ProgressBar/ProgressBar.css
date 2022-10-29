@@ -1,0 +1,21 @@
+.container {
+  height: 20px;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 2rem;
+  border-radius: 25px;
+  background-color: #f2f2f2;
+}
+
+.full {
+  width: 90%;
+  text-align: right;
+  background-color: green;
+}
+
+.label {
+  font-size: 12px;
+  color: #f7f7f7;
+  margin-right: 10px;
+
+}
