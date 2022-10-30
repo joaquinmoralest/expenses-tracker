@@ -115,3 +115,32 @@
   font-style: italic;
 }
 
+@media screen and (max-width: 420px) {
+  .main-content {
+    width: 100%;
+    max-width: 900px;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, .5);
+    color: #004d7a;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+
+  .expenses {
+    width: 100%;
+    padding: .5rem;
+  }
+
+  .budget {
+    width: 100%;
+    padding: .5rem;
+  }
+
+  .resume-item .resume-amount {
+    width: 11rem;
+  }
+
+}
