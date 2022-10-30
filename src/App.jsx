@@ -5,14 +5,21 @@ import ProgressBar from './components/ProgressBar'
 
 function App() {
   const [remaining, setRemaining] = useState(0)
-  const [percentage, setPercentage] = useState(100)
+  const [percentage, setPercentage] = useState(0)
   const [expenses, setExpenses] = useState([])
   const [income, setIncome] = useState(0)
   const [newIncome, setNewIncome] = useState('')
   const [expenseAmount, setExpenseAmount] = useState('')
   const [expenseConcept, setExpenseConcept] = useState('')
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => calculateRemaining())
+
+  useEffect(() => {
+    if (screen.width <= 420) {
+      setIsMobile(true)
+    }
+  })
 
   function formatAmount(amount) {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(amount)
@@ -71,8 +78,19 @@ function App() {
   return (
     <div className="App">
       <div className='title'>
-        <h1>Seguimiento de gastos</h1>
-        <h3>Ordena tus finanzas partiendo por conocer tus habitos</h3>
+        {
+          !isMobile ? (
+            <>
+              <h1>Seguimiento de gastos</h1>
+              <h3>Ordena tus finanzas partiendo por conocer tus habitos</h3>
+            </>
+          ) : (
+            <>
+              <h2>Seguimiento de gastos</h2>
+              <h4>Ordena tus finanzas partiendo por conocer tus habitos</h4>
+            </>
+          )
+        }
       </div>
       
       <main className='main-content'>
