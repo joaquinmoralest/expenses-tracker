@@ -1,7 +1,10 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
 import './App.css'
+import Button from './components/Button/Button'
+import ListItem from './components/ListItem/ListItem'
 import ProgressBar from './components/ProgressBar'
+import { formatAmount } from './utils'
 
 function App() {
   const [remaining, setRemaining] = useState(0)
@@ -20,10 +23,6 @@ function App() {
       setIsMobile(true)
     }
   })
-
-  function formatAmount(amount) {
-    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(amount)
-  }
 
   function calculateRemaining() {
     let totalExpenses = 0
@@ -50,6 +49,10 @@ function App() {
     }
 
     setExpenses([...expenses, newExpenseToAdd])
+
+    // Local Storage
+    // window.localStorage.setItem(`Expense ${newExpenseToAdd.id}`, JSON.stringify(newExpenseToAdd))
+
     calculateRemaining()
     setExpenseAmount('')
     setExpenseConcept('')
@@ -60,6 +63,7 @@ function App() {
 
     setIncome(newIncome)
     setRemaining(newIncome)
+    calculateRemaining()
     setNewIncome('')
   }
 
@@ -104,6 +108,7 @@ function App() {
               placeholder='Monto' 
               type='number' 
               value={expenseAmount}
+              required
             />
             <input 
               onChange={handleExpenseConcept} 
@@ -112,29 +117,23 @@ function App() {
               placeholder='Concepto' 
               type="text" 
               value={expenseConcept}
+              required
             />
-            <button className='btn-add'>
-              <span className="material-symbols-outlined">
-                add
-              </span>
-            </button>
+            <Button 
+              type='add'
+            />
           </form>
 
           <div className='resume-list'>
             {
               expenses.map((expense) => {
                 return(
-                  <div className='resume-item' key={expense.id}>
-                    <div className='resume-amount'>
-                      <p>{formatAmount(expense.amount)}</p>
-                    </div>
-                    <div className='resume-concept'>
-                      <p>{expense.concept}</p>
-                    </div>
-                    <div className='resume-date'>
-                      <p>{expense.date}</p>
-                    </div>
-                  </div>
+                  <ListItem 
+                    key={expense.id}
+                    amount={expense.amount}
+                    concept={expense.concept}
+                    date={expense.date}
+                  />
                 )
               })
             }
@@ -152,15 +151,12 @@ function App() {
               type="number" 
               value={newIncome} 
             />
-            <button className='btn-add'>
-              <span className="material-symbols-outlined">
-                add
-              </span>
-            </button>
+            <Button 
+              type='add'
+            />
           </form>
           <h4 className='txt-center mt-3'>Presupuesto</h4>
           <ProgressBar 
-            // bgColor='full'
             remaining={percentage}
           />
           <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(income)}</h5>
