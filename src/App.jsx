@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
-import './App.css'
+import './styles/App.css'
 import Button from './components/Button/Button'
 import ListItem from './components/ListItem/ListItem'
 import ProgressBar from './components/ProgressBar'
@@ -9,11 +9,9 @@ import { addExpense, formatAmount } from './utils'
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth } from "firebase/auth";
+import Input from './components/Input/Input'
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDKQa-sQRAaIZD5SWf7Ksez57nBviqbpzs",
   authDomain: "expenses-tracker-e3898.firebaseapp.com",
@@ -28,6 +26,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
 
 function App() {
   const [remaining, setRemaining] = useState(0)
@@ -126,19 +125,18 @@ function App() {
           <form 
             className='form' 
             onSubmit={addExpenses}>
-            <input 
+            <Input 
               onChange={handleExpenseAmount} 
               name='expenseAmount' 
-              className='input amount' 
+              className='w-5' 
               placeholder='Monto' 
               type='number' 
               value={expenseAmount}
               required
             />
-            <input 
+            <Input 
               onChange={handleExpenseConcept} 
               name='expenseConcept' 
-              className='input concept' 
               placeholder='Concepto' 
               type="text" 
               value={expenseConcept}
@@ -168,10 +166,9 @@ function App() {
         <section className='budget'>
           <h4 className='txt-center'>Ingresos</h4>
           <form className='form' onSubmit={addIncome}>
-            <input 
+            <Input 
               onChange={handleIncome} 
               name='incomeAmount' 
-              className='input' 
               placeholder='Tu ingreso total para este mes...' 
               type="number" 
               value={newIncome} 
