@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Input from '../components/Input/Input'
 import '../styles/Login.css'
 import { loginGoogle, LoginWithEmail, registerAccount } from '../utils'
@@ -7,8 +8,16 @@ function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const navigate = useNavigate()
+
   function handleSubmit() {
     LoginWithEmail(email, password)
+    navigate('/')
+  }
+
+  function login() {
+    loginGoogle()
+    navigate('/')
   }
 
   return(
@@ -32,7 +41,7 @@ function Login() {
           />
           <button className='btn-register'>Iniciar sesión</button>
         </form>
-        <button className='btn-login' onClick={loginGoogle}>Login with Google</button>
+        <button className='btn-login' onClick={login}>Login with Google</button>
       </div>
     </div>
   )

@@ -7,8 +7,16 @@ function Register() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const navigate = useNavigate()
+
   function handleSubmit() {
     registerAccount(email, password)
+    navigate('/')
+  }
+
+  function register() {
+    loginGoogle()
+    navigate('/')
   }
 
   return(
@@ -32,7 +40,7 @@ function Register() {
           />
           <button className='btn-register'>Crear cuenta</button>
         </form>
-        <button className='btn-register' onClick={loginGoogle}>Login with Google</button>
+        <button className='btn-register' onClick={register}>Login with Google</button>
       </div>
     </div>
   )
