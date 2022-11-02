@@ -4,7 +4,30 @@ import './App.css'
 import Button from './components/Button/Button'
 import ListItem from './components/ListItem/ListItem'
 import ProgressBar from './components/ProgressBar'
-import { formatAmount } from './utils'
+import { addExpense, formatAmount } from './utils'
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDKQa-sQRAaIZD5SWf7Ksez57nBviqbpzs",
+  authDomain: "expenses-tracker-e3898.firebaseapp.com",
+  projectId: "expenses-tracker-e3898",
+  storageBucket: "expenses-tracker-e3898.appspot.com",
+  messagingSenderId: "361822931921",
+  appId: "1:361822931921:web:02d9ed462ad058e18b2ef0",
+  measurementId: "G-R6M0559JM9"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+export const db = getFirestore(app);
 
 function App() {
   const [remaining, setRemaining] = useState(0)
@@ -16,13 +39,13 @@ function App() {
   const [expenseConcept, setExpenseConcept] = useState('')
   const [isMobile, setIsMobile] = useState(false)
 
-  useEffect(() => calculateRemaining())
+  useEffect(() => calculateRemaining(), [])
 
   useEffect(() => {
     if (screen.width <= 420) {
       setIsMobile(true)
     }
-  })
+  }, [])
 
   function calculateRemaining() {
     let totalExpenses = 0
@@ -38,7 +61,7 @@ function App() {
     setPercentage(newPercentage.toFixed(0))
   }
 
-  function addExpense(e) {
+  function addExpenses(e) {
     e.preventDefault()
 
     const newExpenseToAdd = {
@@ -100,7 +123,9 @@ function App() {
       <main className='main-content'>
         <section className='expenses'>
           <h4 className='txt-center'>Gastos</h4>
-          <form className='form' onSubmit={addExpense}>
+          <form 
+            className='form' 
+            onSubmit={addExpenses}>
             <input 
               onChange={handleExpenseAmount} 
               name='expenseAmount' 
