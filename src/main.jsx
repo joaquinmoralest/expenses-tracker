@@ -1,32 +1,18 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
-import Login from './pages/Login';
-import Register from './pages/Register';
 import './styles/index.css'
 import {
-  createBrowserRouter,
   RouterProvider,
   Route,
-} from "react-router-dom";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-  },
-  {
-    path: "login",
-    element: <Login />,
-  },
-  {
-    path: "register",
-    element: <Register />,
-  },
-]);
+} from "react-router-dom"
+import { Provider } from 'react-redux'
+import store from './redux/store'
+import router from './router'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 )
