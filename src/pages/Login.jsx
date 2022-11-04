@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Input from '../components/Input/Input'
+import { loginGoogle, LoginWithEmail } from '../utils/auth'
 import '../styles/Login.css'
-import { loginGoogle, LoginWithEmail, registerAccount } from '../utils'
 
 function Login() {
   const [email, setEmail] = useState('')

@@ -1,4 +1,4 @@
-import { formatAmount } from '../../utils'
+import { formatAmount } from '../../utils/utils'
 import './ListItem.css'
 
 function ListItem({key, amount, concept, date}) {

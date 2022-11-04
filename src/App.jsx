@@ -4,13 +4,18 @@ import './styles/App.css'
 import Button from './components/Button/Button'
 import ListItem from './components/ListItem/ListItem'
 import ProgressBar from './components/ProgressBar'
-import { addExpense, formatAmount } from './utils'
+import { formatAmount } from './utils/utils'
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import Input from './components/Input/Input'
+import Navbar from './components/Navbar/Navbar'
+import { addExpenseToFirestore, getExpensesFromFirestore } from './utils/service'
+import { useDispatch, useSelector } from 'react-redux'
+import { setUserInfo, updateExpenses } from './redux/appSlice'
+import { getUserId } from './utils/auth'
 
 const firebaseConfig = {
   apiKey: "AIzaSyDKQa-sQRAaIZD5SWf7Ksez57nBviqbpzs",
@@ -38,7 +43,32 @@ function App() {
   const [expenseConcept, setExpenseConcept] = useState('')
   const [isMobile, setIsMobile] = useState(false)
 
+  const userInfo = useSelector(state => state?.app?.user)
+  const expensesArr = useSelector(state => state?.app?.expenses)
+  const dispatch = useDispatch()
+
   useEffect(() => calculateRemaining(), [])
+
+  useEffect(() => {
+    const uid = getUserId()
+    dispatch(setUserInfo(uid))
+  }, [])
+
+  useEffect(() => {
+    const getArrFirestore = async () => {
+      try {
+        let expensesFirestore = await getExpensesFromFirestore(userInfo?.uid)
+
+        dispatch(updateExpenses(expensesFirestore))
+      } catch(e) {
+        console.log(`getExpensesFromFirestore failed, ${e}`)
+      }
+    }
+    
+    if (![undefined].includes(userInfo?.uid)) {
+      getArrFirestore()
+    }
+  }, [])
 
   useEffect(() => {
     if (screen.width <= 420) {
@@ -64,11 +94,12 @@ function App() {
     e.preventDefault()
 
     const newExpenseToAdd = {
-      id: expenses.length + 1,
       date: new Date().toISOString().slice(0, 10),
       amount: Number(expenseAmount),
       concept: expenseConcept,
     }
+
+    addExpenseToFirestore(userInfo?.uid, newExpenseToAdd)
 
     setExpenses([...expenses, newExpenseToAdd])
 
@@ -103,6 +134,7 @@ function App() {
 
   return (
     <div className="App">
+      <Navbar />
       <div className='title'>
         {
           !isMobile ? (

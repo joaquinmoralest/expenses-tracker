@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Input from '../components/Input/Input'
 import '../styles/Register.css'
-import { loginGoogle, registerAccount } from '../utils'
+import { loginGoogle, registerAccount } from '../utils/auth'
 
 function Register() {
   const [email, setEmail] = useState('')

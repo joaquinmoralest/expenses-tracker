@@ -1,35 +1,20 @@
 import { 
   createUserWithEmailAndPassword, 
   GoogleAuthProvider, 
+  onAuthStateChanged, 
   signInWithEmailAndPassword, 
   signInWithPopup, 
   signOut 
 } from "firebase/auth";
-import { collection, addDoc, getDocs } from "firebase/firestore"
-import { auth, db } from "./App";
+import { auth } from "../App";
 
 const provider = new GoogleAuthProvider()
 
-export function formatAmount(amount) {
-  return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(amount)
-}
+export function getUserId() {
+  const user = auth.currentUser
+  const uid = user?.uid
 
-export async function addExpense(amount, concept, date) {
-  try {
-    const docRef = await addDoc(collection(db, "expenses"), {
-      amount,
-      concept,
-      date,
-    });
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
-}
-
-export async function getExpenses() {
-  const expenses = await getDocs(collection(db, "expenses"));
-
-  return expenses
+  return uid
 }
 
 export function registerAccount(email, password) {
