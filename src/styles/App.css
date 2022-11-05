@@ -1,4 +1,4 @@
-.App {
+.container {
   margin: 2rem auto;
   max-width: 1200px;
   padding: 1rem;
@@ -10,6 +10,10 @@
 
 .txt-center {
   text-align: center;
+}
+
+.w-5 {
+  width: 5rem !important;
 }
 
 .mb-1 {
@@ -36,28 +40,10 @@
   margin-top: 1.5rem;
 }
 
-.btn-add {
-  border: none;
-  border-radius: 5px;
-  background-color: #089acb;
-  color: #f7f7f7;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .form {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.input {
-  width: 100%;
-  padding: 5px;
-  margin-right: 5px;
-  border: none;
-  border-radius: 5px;
 }
 
 .title {
@@ -83,27 +69,6 @@
 
 .resume-list {
   margin-top: 1rem;
-}
-
-.resume-item {
-  display: flex;
-  justify-content: space-between;
-}
-
-.resume-item .resume-amount {
-  width: 9rem;
-}
-
-.resume-item .resume-concept {
-  width: 100%;
-}
-
-.resume-item .resume-date {
-  width: 9rem;
-}
-
-.amount {
-  width: 5rem;
 }
 
 .budget {

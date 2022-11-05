@@ -1,0 +1,16 @@
+.resume-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.resume-item .resume-amount {
+  width: 9rem;
+}
+
+.resume-item .resume-concept {
+  width: 100%;
+}
+
+.resume-item .resume-date {
+  width: 9rem;
+}
