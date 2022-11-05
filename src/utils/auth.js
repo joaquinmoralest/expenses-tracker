@@ -46,8 +46,9 @@ export function LoginWithEmail(email, password) {
 export function loginGoogle() {
   signInWithPopup(auth, provider)
     .then((result) => {
-      const user = result.user;
-      window.localStorage.setItem('user_temp_data', JSON.stringify(user))
+      const user = result.user
+      
+      return user
     })
     .catch((error) => {
       const errorCode = error.code;

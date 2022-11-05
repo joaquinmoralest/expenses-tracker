@@ -50,17 +50,6 @@ function App() {
   useEffect(() => calculateRemaining(), [])
 
   useEffect(() => {
-    const uid = getUserId()
-    const user = {
-      uid: uid ? uid : 'Z',
-      signinMethod: 'anonimously',
-      firstName: '',
-      lastName: '',
-    }
-    dispatch(setUserInfo(user))
-  }, [])
-
-  useEffect(() => {
     const getArrFirestore = async () => {
       try {
         let expensesFirestore = await getExpensesFromFirestore(userInfo?.uid)
