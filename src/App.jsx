@@ -12,7 +12,7 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import Input from './components/Input/Input'
 import Navbar from './components/Navbar/Navbar'
-import { addExpenseToFirestore, getExpensesFromFirestore } from './utils/service'
+import { addExpenseToFirestore, addIncomeToFirestore, getExpensesFromFirestore } from './utils/service'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateExpenses } from './redux/appSlice'
 import { getUserId } from './utils/auth'
@@ -108,7 +108,17 @@ function App() {
   function addIncome(e) {
     e.preventDefault()
 
-    setIncome(newIncome)
+    const newIncomeToAdd = {
+      date: new Date().toISOString().slice(0, 10),
+      amount: Number(newIncome),
+    }
+
+    userInfo.signinMethod !== 'anonymous' ? (
+      addIncomeToFirestore(userInfo?.uid, newIncomeToAdd)
+    ) : (
+      setIncome(newIncome)
+    )
+
     setRemaining(newIncome)
     calculateRemaining()
     setNewIncome('')
@@ -176,31 +186,36 @@ function App() {
             </form>
 
             <div className='resume-list'>
-              {
-                userInfo.signinMethod === 'anonymous' ? (
-                  expenses.map((expense, index) => {
-                    return(
-                      <ListItem 
-                        key={index}
-                        amount={expense.amount}
-                        concept={expense.concept}
-                        date={expense.date}
-                      />
-                    )
-                  })
-                ) : (
-                  expensesArr.map((expense) => {
-                    return(
-                      <ListItem 
-                        key={expenses.id}
-                        amount={expense.amount}
-                        concept={expense.concept}
-                        date={expense.date}
-                      />
-                    )
-                  })
-                )
-              }
+              <ul>
+                {
+                  userInfo.signinMethod === 'anonymous' ? (
+                    expenses.map((expense, index) => {
+                      return(
+                        <li key={index}>
+                          <ListItem 
+                            amount={expense.amount}
+                            concept={expense.concept}
+                            date={expense.date}
+                          />
+                        </li>
+                      )
+                    })
+                  ) : (
+                    expensesArr.map((expense) => {
+                      return(
+                        <li key={index}>
+                          <ListItem 
+                            key={expenses.id}
+                            amount={expense.amount}
+                            concept={expense.concept}
+                            date={expense.date}
+                          />
+                        </li>
+                      )
+                    })
+                  )
+                }
+              </ul>
             </div>
           </section>
           {console.log(expenses)}
