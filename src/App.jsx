@@ -50,18 +50,8 @@ function App() {
   useEffect(() => calculateRemaining(), [])
 
   useEffect(() => {
-    const getArrFirestore = async () => {
-      try {
-        let expensesFirestore = await getExpensesFromFirestore(userInfo?.uid)
-
-        dispatch(updateExpenses(expensesFirestore))
-      } catch(e) {
-        console.log(`getExpensesFromFirestore failed, ${e}`)
-      }
-    }
-    
     if (userInfo.signinMethod !== 'anonymous') {
-      getArrFirestore()
+      getArrFirestore(userInfo?.uid)
     }
   }, [])
 
@@ -70,6 +60,16 @@ function App() {
       setIsMobile(true)
     }
   }, [])
+
+  const getArrFirestore = async (uid) => {
+    try {
+      let expensesFirestore = await getExpensesFromFirestore(uid)
+
+      dispatch(updateExpenses(expensesFirestore))
+    } catch(e) {
+      console.log(`getExpensesFromFirestore failed, ${e}`)
+    }
+  }
 
   function calculateRemaining() {
     let totalExpenses = 0
@@ -100,6 +100,7 @@ function App() {
       setExpenses([...expenses, newExpenseToAdd])
     )
 
+    getArrFirestore(userInfo?.uid)
     calculateRemaining()
     setExpenseAmount('')
     setExpenseConcept('')
@@ -201,15 +202,19 @@ function App() {
                       )
                     })
                   ) : (
-                    expensesArr.map((expense, index) => {
+                    expensesArr.map((expense) => {
                       return(
-                        <li key={index}>
-                          <ListItem 
-                            amount={expense.amount}
-                            concept={expense.concept}
-                            date={expense.date}
-                          />
-                        </li>
+                        expense.map((exp, index) => {
+                          return(
+                            <li key={index}>
+                              <ListItem 
+                                amount={exp.amount}
+                                concept={exp.concept}
+                                date={exp.date}
+                              />
+                            </li>
+                          )
+                        })
                       )
                     })
                   )
@@ -217,7 +222,6 @@ function App() {
               </ul>
             </div>
           </section>
-          {console.log(expenses)}
 
           <section className='budget'>
             <h4 className='txt-center'>Ingresos</h4>

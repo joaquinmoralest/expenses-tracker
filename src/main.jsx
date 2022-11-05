@@ -9,9 +9,9 @@ import store from './redux/store'
 import router from './router'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  // <React.StrictMode>
+  <React.StrictMode>
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-  // </React.StrictMode>
+  </React.StrictMode>
 )
