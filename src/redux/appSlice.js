@@ -6,7 +6,7 @@ const appSlice = createSlice({
     loading: false,
     user: {
       uid: 'Z',
-      signinMethod: 'anonimously',
+      signinMethod: 'anonymous',
       firstName: '',
       lastName: '',
     },

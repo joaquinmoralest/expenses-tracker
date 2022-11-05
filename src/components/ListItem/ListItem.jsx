@@ -1,9 +1,9 @@
 import { formatAmount } from '../../utils/utils'
 import './ListItem.css'
 
-function ListItem({key, amount, concept, date}) {
+function ListItem({amount, concept, date}) {
   return(
-    <div className='resume-item' key={key}>
+    <div className='resume-item'>
       <div className='resume-amount'>
         <p>{formatAmount(amount)}</p>
       </div>

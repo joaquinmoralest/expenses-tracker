@@ -14,7 +14,7 @@ import Input from './components/Input/Input'
 import Navbar from './components/Navbar/Navbar'
 import { addExpenseToFirestore, getExpensesFromFirestore } from './utils/service'
 import { useDispatch, useSelector } from 'react-redux'
-import { setUserInfo, updateExpenses } from './redux/appSlice'
+import { updateExpenses } from './redux/appSlice'
 import { getUserId } from './utils/auth'
 
 const firebaseConfig = {
@@ -60,7 +60,7 @@ function App() {
       }
     }
     
-    if (![undefined].includes(userInfo?.uid)) {
+    if (userInfo.signinMethod !== 'anonymous') {
       getArrFirestore()
     }
   }, [])
@@ -94,12 +94,11 @@ function App() {
       concept: expenseConcept,
     }
 
-    addExpenseToFirestore(userInfo?.uid, newExpenseToAdd)
-
-    setExpenses([...expenses, newExpenseToAdd])
-
-    // Local Storage
-    // window.localStorage.setItem(`Expense ${newExpenseToAdd.id}`, JSON.stringify(newExpenseToAdd))
+    userInfo.signinMethod !== 'anonymous' ? (
+      addExpenseToFirestore(userInfo?.uid, newExpenseToAdd)
+    ) : (
+      setExpenses([...expenses, newExpenseToAdd])
+    )
 
     calculateRemaining()
     setExpenseAmount('')
@@ -178,20 +177,33 @@ function App() {
 
             <div className='resume-list'>
               {
-                expenses.map((expensesArr) => {
-                  return(
-                    <ListItem 
-                      key={expensesArr.id}
-                      amount={expensesArr.amount}
-                      concept={expensesArr.concept}
-                      date={expensesArr.date}
-                    />
-                  )
-                })
+                userInfo.signinMethod === 'anonymous' ? (
+                  expenses.map((expense, index) => {
+                    return(
+                      <ListItem 
+                        key={index}
+                        amount={expense.amount}
+                        concept={expense.concept}
+                        date={expense.date}
+                      />
+                    )
+                  })
+                ) : (
+                  expensesArr.map((expense) => {
+                    return(
+                      <ListItem 
+                        key={expenses.id}
+                        amount={expense.amount}
+                        concept={expense.concept}
+                        date={expense.date}
+                      />
+                    )
+                  })
+                )
               }
             </div>
           </section>
-          {console.log(expensesArr)}
+          {console.log(expenses)}
 
           <section className='budget'>
             <h4 className='txt-center'>Ingresos</h4>
