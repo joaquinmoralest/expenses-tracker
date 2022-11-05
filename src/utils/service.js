@@ -31,7 +31,7 @@ export async function addIncomeToFirestore(userId, newIncome) {
 export async function getExpensesFromFirestore(userId) {
   try {
     let expenses = []
-    const docRef = collection(db, userId)
+    const docRef = collection(db, userId, 'data', 'expenses')
     let resp = await getDocs(docRef)
 
     resp.forEach(doc => {

@@ -201,11 +201,10 @@ function App() {
                       )
                     })
                   ) : (
-                    expensesArr.map((expense) => {
+                    expensesArr.map((expense, index) => {
                       return(
                         <li key={index}>
                           <ListItem 
-                            key={expenses.id}
                             amount={expense.amount}
                             concept={expense.concept}
                             date={expense.date}

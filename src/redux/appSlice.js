@@ -22,7 +22,6 @@ const appSlice = createSlice({
     },
     updateExpenses: (state, action) => {
       state.expenses = [
-        ...state.expenses, 
         action.payload
       ]
     },
