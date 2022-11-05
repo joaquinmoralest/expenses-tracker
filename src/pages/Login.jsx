@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Input from '../components/Input/Input'
 import { loginGoogle, LoginWithEmail } from '../utils/auth'
 import '../styles/Login.css'
+import Navbar from '../components/Navbar/Navbar'
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -21,29 +22,32 @@ function Login() {
   }
 
   return(
-    <div className='login'>
-      <div className='login-container'>
-        <div className='logo'>
-          <img src="" alt="" />
+    <>
+      <Navbar />
+      <div className='login'>
+        <div className='login-container'>
+          <div className='logo'>
+            <img src="" alt="" />
+          </div>
+          <form className='form-login' onSubmit={handleSubmit}>
+            <Input 
+              onChange={(e) => setEmail(e.target.value)} 
+              type="email" 
+              placeholder='Email'
+              className='mb-2'
+            />
+            <Input 
+              onChange={(e) => setPassword(e.target.value)} 
+              type="password" 
+              placeholder='Contraseña'
+              className='mb-2'
+            />
+            <button className='btn-register'>Iniciar sesión</button>
+          </form>
+          <button className='btn-login' onClick={login}>Login with Google</button>
         </div>
-        <form className='form-login' onSubmit={handleSubmit}>
-          <Input 
-            onChange={(e) => setEmail(e.target.value)} 
-            type="email" 
-            placeholder='Email'
-            className='mb-2'
-          />
-          <Input 
-            onChange={(e) => setPassword(e.target.value)} 
-            type="password" 
-            placeholder='Contraseña'
-            className='mb-2'
-          />
-          <button className='btn-register'>Iniciar sesión</button>
-        </form>
-        <button className='btn-login' onClick={login}>Login with Google</button>
       </div>
-    </div>
+    </>
   )
 }
 

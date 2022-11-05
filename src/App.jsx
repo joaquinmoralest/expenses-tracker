@@ -51,7 +51,13 @@ function App() {
 
   useEffect(() => {
     const uid = getUserId()
-    dispatch(setUserInfo(uid))
+    const user = {
+      uid: uid ? uid : 'Z',
+      signinMethod: 'anonimously',
+      firstName: '',
+      lastName: '',
+    }
+    dispatch(setUserInfo(user))
   }, [])
 
   useEffect(() => {
@@ -135,87 +141,91 @@ function App() {
   return (
     <div className="App">
       <Navbar />
-      <div className='title'>
-        {
-          !isMobile ? (
-            <>
-              <h1>Seguimiento de gastos</h1>
-              <h3>Ordena tus finanzas partiendo por conocer tus habitos</h3>
-            </>
-          ) : (
-            <>
-              <h2>Seguimiento de gastos</h2>
-              <h4>Ordena tus finanzas partiendo por conocer tus habitos</h4>
-            </>
-          )
-        }
+      <div className="container">
+
+        <div className='title'>
+          {
+            !isMobile ? (
+              <>
+                <h1>Seguimiento de gastos</h1>
+                <h3>Ordena tus finanzas partiendo por conocer tus habitos</h3>
+              </>
+            ) : (
+              <>
+                <h2>Seguimiento de gastos</h2>
+                <h4>Ordena tus finanzas partiendo por conocer tus habitos</h4>
+              </>
+            )
+          }
+        </div>
+        
+        <main className='main-content'>
+          <section className='expenses'>
+            <h4 className='txt-center'>Gastos</h4>
+            <form 
+              className='form' 
+              onSubmit={addExpenses}>
+              <Input 
+                onChange={handleExpenseAmount} 
+                name='expenseAmount' 
+                className='w-5' 
+                placeholder='Monto' 
+                type='number' 
+                value={expenseAmount}
+                required
+              />
+              <Input 
+                onChange={handleExpenseConcept} 
+                name='expenseConcept' 
+                placeholder='Concepto' 
+                type="text" 
+                value={expenseConcept}
+                required
+              />
+              <Button 
+                type='add'
+              />
+            </form>
+
+            <div className='resume-list'>
+              {
+                expenses.map((expensesArr) => {
+                  return(
+                    <ListItem 
+                      key={expensesArr.id}
+                      amount={expensesArr.amount}
+                      concept={expensesArr.concept}
+                      date={expensesArr.date}
+                    />
+                  )
+                })
+              }
+            </div>
+          </section>
+          {console.log(expensesArr)}
+
+          <section className='budget'>
+            <h4 className='txt-center'>Ingresos</h4>
+            <form className='form' onSubmit={addIncome}>
+              <Input 
+                onChange={handleIncome} 
+                name='incomeAmount' 
+                placeholder='Tu ingreso total para este mes...' 
+                type="number" 
+                value={newIncome} 
+              />
+              <Button 
+                type='add'
+              />
+            </form>
+            <h4 className='txt-center mt-3'>Presupuesto</h4>
+            <ProgressBar 
+              remaining={percentage}
+            />
+            <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(income)}</h5>
+          </section>
+        </main>
       </div>
-      
-      <main className='main-content'>
-        <section className='expenses'>
-          <h4 className='txt-center'>Gastos</h4>
-          <form 
-            className='form' 
-            onSubmit={addExpenses}>
-            <Input 
-              onChange={handleExpenseAmount} 
-              name='expenseAmount' 
-              className='w-5' 
-              placeholder='Monto' 
-              type='number' 
-              value={expenseAmount}
-              required
-            />
-            <Input 
-              onChange={handleExpenseConcept} 
-              name='expenseConcept' 
-              placeholder='Concepto' 
-              type="text" 
-              value={expenseConcept}
-              required
-            />
-            <Button 
-              type='add'
-            />
-          </form>
-
-          <div className='resume-list'>
-            {
-              expenses.map((expense) => {
-                return(
-                  <ListItem 
-                    key={expense.id}
-                    amount={expense.amount}
-                    concept={expense.concept}
-                    date={expense.date}
-                  />
-                )
-              })
-            }
-          </div>
-        </section>
-
-        <section className='budget'>
-          <h4 className='txt-center'>Ingresos</h4>
-          <form className='form' onSubmit={addIncome}>
-            <Input 
-              onChange={handleIncome} 
-              name='incomeAmount' 
-              placeholder='Tu ingreso total para este mes...' 
-              type="number" 
-              value={newIncome} 
-            />
-            <Button 
-              type='add'
-            />
-          </form>
-          <h4 className='txt-center mt-3'>Presupuesto</h4>
-          <ProgressBar 
-            remaining={percentage}
-          />
-          <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(income)}</h5>
-        </section>
-      </main>
     </div>
   )
 }

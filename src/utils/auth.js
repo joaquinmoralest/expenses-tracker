@@ -60,11 +60,11 @@ export function loginGoogle() {
     })
 }
 
-// export function signOut() {
-//   signOut(auth).then(() => {
-//     // Sign-out successful.
-//   }).catch((error) => {
-//     // An error happened.
-//     console.log(error)
-//   });
-// }
+export function signOutAccount() {
+  signOut(auth).then(() => {
+    console.log('Saliste de la sesion')
+  }).catch((error) => {
+    // An error happened.
+    console.log(error)
+  });
+}

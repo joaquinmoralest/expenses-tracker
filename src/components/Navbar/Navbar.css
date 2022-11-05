@@ -1,0 +1,28 @@
+.navbar {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, .8);
+}
+
+.nav-logo {
+  width: 25px;
+  height: 25px;
+  background-color: rgba(255, 255, 255, .5);
+}
+
+.nav-links {
+  cursor: pointer;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: #f7f7f7;
+  margin-right: 20px;
+}
+
+.nav-links a:hover {
+  color: #058e17;
+}
