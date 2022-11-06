@@ -1,14 +1,14 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit'
 
 const appSlice = createSlice({
   name: 'app',
   initialState: {
     loading: false,
     user: {
-      uid: 'Z',
+      uid: '',
       signinMethod: 'anonymous',
       firstName: '',
-      lastName: '',
+      lastName: ''
     },
     expenses: [],
     income: 0
@@ -28,8 +28,11 @@ const appSlice = createSlice({
     updateIncome: (state, action) => {
       state.income = action.payload
     },
+    clearExpenses: (state) => {
+      state.expenses = []
+    }
   }
 })
 
-export const { changeLoading, setUserInfo, updateExpenses, updateIncome } = appSlice.actions
+export const { changeLoading, setUserInfo, updateExpenses, updateIncome, clearExpenses } = appSlice.actions
 export default appSlice.reducer

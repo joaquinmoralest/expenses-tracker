@@ -1,65 +1,68 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Input from '../components/Input/Input'
+import Input from './Input/Input'
 import { getUserId, loginGoogle, LoginWithEmail } from '../utils/auth'
 import '../styles/Login.css'
-import Navbar from '../components/Navbar/Navbar'
 import { useDispatch } from 'react-redux'
 import { setUserInfo } from '../redux/appSlice'
 
-function Login() {
+function Login () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [userId, setUserId] = useState('')
+
+  useEffect(() => {
+    setUserId(getUserId())
+  })
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  function handleSubmit() {
+  function handleSubmit () {
     LoginWithEmail(email, password)
 
     const user = {
-      uid: getUserId(),
+      uid: userId,
       signinMethod: 'email',
       firstName: '',
-      lastName: '',
+      lastName: ''
     }
 
     dispatch(setUserInfo(user))
     navigate('/')
   }
 
-  function login() {
-    loginGoogle()
+  async function login () {
+    await loginGoogle()
 
     const user = {
       uid: getUserId(),
       signinMethod: 'google',
       firstName: '',
-      lastName: '',
+      lastName: ''
     }
 
     dispatch(setUserInfo(user))
     navigate('/')
   }
 
-  return(
+  return (
     <>
-      <Navbar />
       <div className='login'>
         <div className='login-container'>
           <div className='logo'>
-            <img src="" alt="" />
+            <img src='' alt='' />
           </div>
           <form className='form-login' onSubmit={handleSubmit}>
-            <Input 
-              onChange={(e) => setEmail(e.target.value)} 
-              type="email" 
+            <Input
+              onChange={(e) => setEmail(e.target.value)}
+              type='email'
               placeholder='Email'
               className='mb-2'
             />
-            <Input 
-              onChange={(e) => setPassword(e.target.value)} 
-              type="password" 
+            <Input
+              onChange={(e) => setPassword(e.target.value)}
+              type='password'
               placeholder='Contraseña'
               className='mb-2'
             />
