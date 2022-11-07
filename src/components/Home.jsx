@@ -7,7 +7,8 @@ import { formatAmount } from '../utils/utils'
 import Input from './Input/Input'
 import { addExpenseToFirestore, addIncomeToFirestore, getExpensesFromFirestore } from '../utils/service'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateExpenses } from '../redux/appSlice'
+import { setUserInfo, updateExpenses } from '../redux/appSlice'
+import { authStateChanged } from '../utils/auth'
 
 function Home () {
   const [remaining, setRemaining] = useState(0)
@@ -23,23 +24,17 @@ function Home () {
   const expensesArr = useSelector(state => state?.app?.expenses)
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    authStateChanged(user => dispatch(setUserInfo(user)))
+  }, [])
+
   useEffect(() => calculateRemaining(), [])
 
   useEffect(() => {
-    const getArrFirestore = async () => {
-      try {
-        const expensesFirestore = await getExpensesFromFirestore(userInfo?.uid)
-
-        dispatch(updateExpenses(expensesFirestore))
-      } catch (e) {
-        console.log(`getExpensesFromFirestore failed, ${e}`)
-      }
-    }
-
     if (userInfo.signinMethod !== 'anonymous') {
       getArrFirestore()
     }
-  }, [])
+  }, [userInfo])
 
   useEffect(() => {
     // eslint-disable-next-line no-undef
@@ -47,6 +42,17 @@ function Home () {
       setIsMobile(true)
     }
   }, [])
+
+  async function getArrFirestore () {
+    try {
+      const expensesFirestore = await getExpensesFromFirestore(userInfo?.uid)
+
+      dispatch(updateExpenses(expensesFirestore))
+      calculateRemaining()
+    } catch (e) {
+      console.log(`getExpensesFromFirestore failed, ${e}`)
+    }
+  }
 
   function calculateRemaining () {
     let totalExpenses = 0
@@ -72,10 +78,12 @@ function Home () {
     }
 
     userInfo.signinMethod !== 'anonymous'
-      ? (addExpenseToFirestore(userInfo?.uid, newExpenseToAdd))
+      ? (
+          addExpenseToFirestore(userInfo?.uid, newExpenseToAdd) &&
+          getArrFirestore()
+        )
       : (setExpenses([...expenses, newExpenseToAdd]))
 
-    // getArrFirestore(userInfo?.uid)
     calculateRemaining()
     setExpenseAmount('')
     setExpenseConcept('')

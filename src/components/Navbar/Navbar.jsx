@@ -14,8 +14,8 @@ function Navbar () {
     const user = {
       uid: '',
       signinMethod: 'anonymous',
-      firstName: '',
-      lastName: ''
+      name: '',
+      email: ''
     }
 
     dispatch(setUserInfo(user))
