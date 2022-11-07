@@ -37,7 +37,7 @@ export function authStateChanged (onChange) {
   })
 }
 
-export function registerAccount (email, password) {
+export async function registerAccount (email, password) {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user
@@ -50,7 +50,7 @@ export function registerAccount (email, password) {
     })
 }
 
-export function LoginWithEmail (email, password) {
+export async function LoginWithEmail (email, password) {
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user

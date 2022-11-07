@@ -4,38 +4,35 @@ import { useNavigate } from 'react-router-dom'
 import Input from '../components/Input/Input'
 import { setUserInfo } from '../redux/appSlice'
 import '../styles/Register.css'
-import { getUserInfo, loginGoogle, registerAccount } from '../utils/auth'
+import { loginGoogle, registerAccount } from '../utils/auth'
 
 function Register () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  function handleSubmit () {
-    registerAccount(email, password)
+  async function handleSubmit (e) {
+    e.preventDefault()
+    await registerAccount(email, password)
 
-    const user = {
-      uid: getUserInfo().uid,
-      name: '',
-      email: ''
-    }
-
-    dispatch(setUserInfo(user))
+    // dispatch(setUserInfo(userData))
     navigate('/')
   }
 
-  function register () {
-    loginGoogle()
+  async function registerWithGoogle () {
+    const userData = await loginGoogle()
+      .then((user) => {
+        const { uid, name, email } = user
 
-    const user = {
-      uid: getUserInfo().uid,
-      name: '',
-      email: ''
-    }
+        return {
+          uid,
+          name,
+          email
+        }
+      })
 
-    dispatch(setUserInfo(user))
+    dispatch(setUserInfo(userData))
     navigate('/')
   }
 
@@ -61,7 +58,7 @@ function Register () {
             />
             <button className='btn-register'>Crear cuenta</button>
           </form>
-          <button className='btn-register' onClick={register}>Signin with Google</button>
+          <button className='btn-register' onClick={registerWithGoogle}>Signin with Google</button>
         </div>
       </div>
     </>

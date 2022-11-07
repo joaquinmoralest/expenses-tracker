@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Input from './Input/Input'
-import { getUserInfo, loginGoogle, LoginWithEmail } from '../utils/auth'
+import { loginGoogle, LoginWithEmail } from '../utils/auth'
 import '../styles/Login.css'
 import { useDispatch } from 'react-redux'
 import { setUserInfo } from '../redux/appSlice'
@@ -9,25 +9,13 @@ import { setUserInfo } from '../redux/appSlice'
 function Login () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [currentUser, setCurrentUser] = useState()
-
-  useEffect(() => {
-    setCurrentUser(getUserInfo())
-  })
-
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  function handleSubmit () {
-    LoginWithEmail(email, password)
+  async function handleSubmit (e) {
+    e.preventDefault()
+    await LoginWithEmail(email, password)
 
-    const user = {
-      uid: currentUser.uid,
-      name: '',
-      email: ''
-    }
-
-    dispatch(setUserInfo(user))
     navigate('/')
   }
 

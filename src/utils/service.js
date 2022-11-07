@@ -10,7 +10,7 @@ import { db } from '../App'
 
 export async function addExpenseToFirestore (userId, newExpense) {
   try {
-    const docRef = await addDoc(collection(db, userId, 'data', 'expenses'), newExpense)
+    await addDoc(collection(db, userId, 'data', 'expenses'), newExpense)
   } catch (e) {
     console.error('Error adding document', e)
   }
@@ -21,15 +21,18 @@ export async function addIncomeToFirestore (userId, newIncome) {
     let docToOverwrite
     const q = query(collection(db, userId, 'data', 'incomes'))
     const querySnapshot = await getDocs(q)
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      docToOverwrite = doc.id
-    })
 
-    const cityRef = doc(db, userId, 'data', 'incomes', docToOverwrite)
-    setDoc(cityRef, newIncome, { merge: true })
+    if (querySnapshot.length > 0) {
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        docToOverwrite = doc.id
+      })
 
-    // const docRef = await addDoc(collection(db, userId, 'data', 'incomes'), newIncome);
+      const cityRef = doc(db, userId, 'data', 'incomes', docToOverwrite)
+      setDoc(cityRef, newIncome, { merge: true })
+    } else {
+      await addDoc(collection(db, userId, 'data', 'incomes'), newIncome)
+    }
   } catch (e) {
     console.error('Error adding document: ', e)
   }
