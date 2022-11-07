@@ -1,19 +1,33 @@
 import {
+  browserLocalPersistence,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
+  onAuthStateChanged,
+  setPersistence,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut
 } from 'firebase/auth'
 import { auth } from '../App'
 
-const provider = new GoogleAuthProvider()
+export function getUserInfo () {
+  const currentUser = auth.currentUser
 
-export function getUserId () {
-  const user = auth.currentUser
-  const uid = user?.uid
+  return currentUser
+}
 
-  return uid
+export function authStateChanged () {
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/firebase.User
+      const uid = user.uid;
+      // ...
+    } else {
+      // User is signed out
+      // ...
+    }
+  })
 }
 
 export function registerAccount (email, password) {
@@ -43,21 +57,29 @@ export function LoginWithEmail (email, password) {
 }
 
 export async function loginGoogle () {
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      const user = result.user
+  const provider = new GoogleAuthProvider()
 
-      return user
+  const userData = await setPersistence(auth, browserLocalPersistence)
+    .then(async () => {
+      const userData = await signInWithPopup(auth, provider)
+        .then((user) => {
+          const { uid } = user.user
+          const { displayName } = user.user
+          const { email } = user.user
+
+          return {
+            uid,
+            name: displayName,
+            email
+          }
+        })
+      return userData
     })
     .catch((error) => {
-      const errorCode = error.code
-      const errorMessage = error.message
-      // The email of the user's account used.
-      // const email = error.customData.email
-      // The AuthCredential type that was used.
-      // const credential = GoogleAuthProvider.credentialFromError(error);
-      console.log(`Error code ${errorCode}: ${errorMessage}`)
+      console.log(`setPersistence error, ${error}`)
     })
+
+  return userData
 }
 
 export function signOutAccount () {

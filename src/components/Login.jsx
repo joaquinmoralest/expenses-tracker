@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Input from './Input/Input'
-import { getUserId, loginGoogle, LoginWithEmail } from '../utils/auth'
+import { getUserInfo, loginGoogle, LoginWithEmail } from '../utils/auth'
 import '../styles/Login.css'
 import { useDispatch } from 'react-redux'
 import { setUserInfo } from '../redux/appSlice'
@@ -9,10 +9,10 @@ import { setUserInfo } from '../redux/appSlice'
 function Login () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [userId, setUserId] = useState('')
+  const [currentUser, setCurrentUser] = useState()
 
   useEffect(() => {
-    setUserId(getUserId())
+    setCurrentUser(getUserInfo())
   })
 
   const navigate = useNavigate()
@@ -22,10 +22,10 @@ function Login () {
     LoginWithEmail(email, password)
 
     const user = {
-      uid: userId,
+      uid: currentUser.uid,
       signinMethod: 'email',
-      firstName: '',
-      lastName: ''
+      name: '',
+      email: ''
     }
 
     dispatch(setUserInfo(user))
@@ -33,16 +33,19 @@ function Login () {
   }
 
   async function login () {
-    await loginGoogle()
+    const userData = await loginGoogle()
+      .then((user) => {
+        const { uid, name, email } = user
 
-    const user = {
-      uid: getUserId(),
-      signinMethod: 'google',
-      firstName: '',
-      lastName: ''
-    }
+        return {
+          uid,
+          signinMethod: 'google',
+          name,
+          email
+        }
+      })
 
-    dispatch(setUserInfo(user))
+    dispatch(setUserInfo(userData))
     navigate('/')
   }
 
