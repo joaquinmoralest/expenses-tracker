@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { clearExpenses, clearIncome, setUserInfo } from '../../redux/appSlice'
+import { clearExpenses, clearIncome, clearUserInfo } from '../../redux/appSlice'
 import { signOutAccount } from '../../utils/auth'
 import './Navbar.css'
 
@@ -11,16 +11,9 @@ function Navbar () {
   function handleClick () {
     signOutAccount()
 
-    const user = {
-      uid: '',
-      signinMethod: 'anonymous',
-      name: '',
-      email: ''
-    }
-
-    dispatch(setUserInfo(user))
     dispatch(clearExpenses())
     dispatch(clearIncome())
+    dispatch(clearUserInfo())
   }
 
   return (
@@ -31,7 +24,7 @@ function Navbar () {
       <div className='nav-links'>
         <Link to='/'>Inicio</Link>
         {
-          userInfo?.signinMethod === 'anonymous'
+          !userInfo?.uid
             ? (
               <>
                 <Link to='/login'>Iniciar sesión</Link>

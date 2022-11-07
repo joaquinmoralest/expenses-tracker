@@ -5,8 +5,7 @@ const appSlice = createSlice({
   initialState: {
     loading: false,
     user: {
-      uid: '',
-      signinMethod: 'anonymous',
+      uid: null,
       email: '',
       name: ''
     },
@@ -19,6 +18,13 @@ const appSlice = createSlice({
     },
     setUserInfo: (state, action) => {
       state.user = action.payload
+    },
+    clearUserInfo: (state) => {
+      state.user = {
+        uid: null,
+        name: '',
+        email: ''
+      }
     },
     updateExpenses: (state, action) => {
       state.expenses = [
@@ -37,5 +43,5 @@ const appSlice = createSlice({
   }
 })
 
-export const { changeLoading, setUserInfo, updateExpenses, updateIncome, clearExpenses, clearIncome } = appSlice.actions
+export const { changeLoading, setUserInfo, updateExpenses, updateIncome, clearExpenses, clearIncome, clearUserInfo } = appSlice.actions
 export default appSlice.reducer

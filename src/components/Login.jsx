@@ -23,7 +23,6 @@ function Login () {
 
     const user = {
       uid: currentUser.uid,
-      signinMethod: 'email',
       name: '',
       email: ''
     }
@@ -39,7 +38,6 @@ function Login () {
 
         return {
           uid,
-          signinMethod: 'google',
           name,
           email
         }

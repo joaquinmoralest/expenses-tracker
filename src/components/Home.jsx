@@ -30,10 +30,10 @@ function Home () {
     authStateChanged(user => dispatch(setUserInfo(user)))
   }, [])
 
-  useEffect(() => calculateRemaining(), [expenses, expensesArr])
+  useEffect(() => calculateRemaining(), [expenses, income, expensesArr])
 
   useEffect(() => {
-    if (userInfo.signinMethod !== 'anonymous') {
+    if (userInfo?.uid) {
       fetchData()
     }
   }, [userInfo])
@@ -48,6 +48,7 @@ function Home () {
   async function fetchData () {
     await getArrFirestore()
     await getIncomeFirestore()
+    await calculateRemaining()
   }
 
   async function getArrFirestore () {
@@ -63,10 +64,15 @@ function Home () {
 
   async function getIncomeFirestore () {
     try {
-      const incomeFirestore = await getIncomeFromFirestore(userInfo?.uid)
+      getIncomeFromFirestore(userInfo?.uid)
+        .then(income => {
+          dispatch(updateIncome(income))
+        })
+        .catch(error => {
+          console.log('getIncomeFromFirestore error, ', error)
+        })
 
-      await dispatch(updateIncome(incomeFirestore))
-      await calculateRemaining()
+      calculateRemaining()
     } catch (error) {
       console.log(error)
     }
@@ -77,7 +83,7 @@ function Home () {
     let newRemaining = 0
     let newPercentage = 0
 
-    if (userInfo?.signinMethod === 'anonymous') {
+    if (!userInfo?.uid) {
       expenses.forEach((expense) => {
         totalExpenses = totalExpenses + expense.amount
       })
@@ -101,12 +107,12 @@ function Home () {
     e.preventDefault()
 
     const newExpenseToAdd = {
-      date: new Date().toISOString().slice(0, 10),
+      date: new Date().toISOString(),
       amount: Number(expenseAmount),
       concept: expenseConcept
     }
 
-    userInfo.signinMethod !== 'anonymous'
+    userInfo?.uid
       ? (
           addExpenseToFirestore(userInfo?.uid, newExpenseToAdd) &&
           getArrFirestore()
@@ -125,7 +131,7 @@ function Home () {
       amount: Number(newIncome)
     }
 
-    if (userInfo.signinMethod !== 'anonymous') {
+    if (userInfo?.uid) {
       await addIncomeToFirestore(userInfo?.uid, newIncomeToAdd)
       await getIncomeFirestore()
     } else {
@@ -201,7 +207,7 @@ function Home () {
           <div className='resume-list'>
             <ul>
               {
-                userInfo.signinMethod === 'anonymous'
+                !userInfo?.uid
                   ? (
                       expenses.map((expense, index) => {
                         return (
@@ -209,7 +215,7 @@ function Home () {
                             <ListItem
                               amount={expense.amount}
                               concept={expense.concept}
-                              date={expense.date}
+                              date={expense.date.slice(0, 10)}
                             />
                           </li>
                         )
@@ -222,7 +228,7 @@ function Home () {
                             <ListItem
                               amount={expense.amount}
                               concept={expense.concept}
-                              date={expense.date}
+                              date={expense.date.slice(0, 10)}
                             />
                           </li>
                         )
@@ -252,7 +258,7 @@ function Home () {
             remaining={percentage}
           />
           {
-            userInfo?.signinMethod === 'anonymous'
+            !userInfo?.uid
               ? (
                 <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(income)}</h5>
                 )

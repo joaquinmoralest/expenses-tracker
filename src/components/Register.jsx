@@ -18,7 +18,6 @@ function Register () {
 
     const user = {
       uid: getUserInfo().uid,
-      signinMethod: 'email',
       name: '',
       email: ''
     }
@@ -32,7 +31,6 @@ function Register () {
 
     const user = {
       uid: getUserInfo().uid,
-      signinMethod: 'google',
       name: '',
       email: ''
     }
