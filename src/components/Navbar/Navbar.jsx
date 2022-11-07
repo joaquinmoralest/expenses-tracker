@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { clearExpenses, setUserInfo } from '../../redux/appSlice'
+import { clearExpenses, clearIncome, setUserInfo } from '../../redux/appSlice'
 import { signOutAccount } from '../../utils/auth'
 import './Navbar.css'
 
@@ -20,6 +20,7 @@ function Navbar () {
 
     dispatch(setUserInfo(user))
     dispatch(clearExpenses())
+    dispatch(clearIncome())
   }
 
   return (

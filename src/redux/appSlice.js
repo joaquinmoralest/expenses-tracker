@@ -30,9 +30,12 @@ const appSlice = createSlice({
     },
     clearExpenses: (state) => {
       state.expenses = []
+    },
+    clearIncome: (state) => {
+      state.income = 0
     }
   }
 })
 
-export const { changeLoading, setUserInfo, updateExpenses, updateIncome, clearExpenses } = appSlice.actions
+export const { changeLoading, setUserInfo, updateExpenses, updateIncome, clearExpenses, clearIncome } = appSlice.actions
 export default appSlice.reducer

@@ -52,3 +52,21 @@ export async function getExpensesFromFirestore (userId) {
     console.log(e)
   }
 }
+
+export async function getIncomeFromFirestore (userId) {
+  try {
+    let income
+    const docRef = collection(db, userId, 'data', 'incomes')
+    const resp = await getDocs(docRef)
+
+    resp.forEach(doc => {
+      const data = doc.data()
+
+      income = data
+    })
+
+    return income
+  } catch (e) {
+    console.log(e)
+  }
+}
