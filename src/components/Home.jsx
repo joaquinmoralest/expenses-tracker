@@ -5,9 +5,10 @@ import ListItem from './ListItem/ListItem'
 import ProgressBar from './ProgressBar'
 import { formatAmount } from '../utils/utils'
 import Input from './Input/Input'
-import { addExpenseToFirestore, addIncomeToFirestore, getExpensesFromFirestore } from '../utils/service'
+import { addExpenseToFirestore, addIncomeToFirestore, getExpensesFromFirestore, getIncomeFromFirestore } from '../utils/service'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateExpenses } from '../redux/appSlice'
+import { setUserInfo, updateExpenses, updateIncome } from '../redux/appSlice'
+import { authStateChanged } from '../utils/auth'
 
 function Home () {
   const [remaining, setRemaining] = useState(0)
@@ -20,26 +21,22 @@ function Home () {
   const [isMobile, setIsMobile] = useState(false)
 
   const userInfo = useSelector(state => state?.app?.user)
+  const userIncome = useSelector(state => state?.app?.income)
   const expensesArr = useSelector(state => state?.app?.expenses)
+  const expensesArrRef = expensesArr[0]
   const dispatch = useDispatch()
 
-  useEffect(() => calculateRemaining(), [])
+  useEffect(() => {
+    authStateChanged(user => dispatch(setUserInfo(user)))
+  }, [])
+
+  useEffect(() => calculateRemaining(), [expenses, income, expensesArr])
 
   useEffect(() => {
-    const getArrFirestore = async () => {
-      try {
-        const expensesFirestore = await getExpensesFromFirestore(userInfo?.uid)
-
-        dispatch(updateExpenses(expensesFirestore))
-      } catch (e) {
-        console.log(`getExpensesFromFirestore failed, ${e}`)
-      }
+    if (userInfo?.uid) {
+      fetchData()
     }
-
-    if (userInfo.signinMethod !== 'anonymous') {
-      getArrFirestore()
-    }
-  }, [])
+  }, [userInfo])
 
   useEffect(() => {
     // eslint-disable-next-line no-undef
@@ -48,15 +45,59 @@ function Home () {
     }
   }, [])
 
+  async function fetchData () {
+    await getArrFirestore()
+    await getIncomeFirestore()
+    await calculateRemaining()
+  }
+
+  async function getArrFirestore () {
+    try {
+      const expensesFirestore = await getExpensesFromFirestore(userInfo?.uid)
+
+      dispatch(updateExpenses(expensesFirestore))
+      calculateRemaining()
+    } catch (e) {
+      console.log(`getExpensesFromFirestore failed, ${e}`)
+    }
+  }
+
+  async function getIncomeFirestore () {
+    try {
+      getIncomeFromFirestore(userInfo?.uid)
+        .then(income => {
+          dispatch(updateIncome(income))
+        })
+        .catch(error => {
+          console.log('getIncomeFromFirestore error, ', error)
+        })
+
+      calculateRemaining()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   function calculateRemaining () {
     let totalExpenses = 0
+    let newRemaining = 0
+    let newPercentage = 0
 
-    expenses.forEach((expense) => {
-      totalExpenses = totalExpenses + expense.amount
-    })
+    if (!userInfo?.uid) {
+      expenses.forEach((expense) => {
+        totalExpenses = totalExpenses + expense.amount
+      })
 
-    const newRemaining = income - totalExpenses
-    const newPercentage = (newRemaining / income) * 100
+      newRemaining = income - totalExpenses
+      newPercentage = (newRemaining / income) * 100
+    } else {
+      expensesArrRef?.forEach((expense) => {
+        totalExpenses = totalExpenses + expense.amount
+      })
+
+      newRemaining = userIncome?.amount - totalExpenses
+      newPercentage = (newRemaining / userIncome?.amount) * 100
+    }
 
     setRemaining(newRemaining)
     setPercentage(newPercentage.toFixed(0))
@@ -66,22 +107,23 @@ function Home () {
     e.preventDefault()
 
     const newExpenseToAdd = {
-      date: new Date().toISOString().slice(0, 10),
+      date: new Date().toISOString(),
       amount: Number(expenseAmount),
       concept: expenseConcept
     }
 
-    userInfo.signinMethod !== 'anonymous'
-      ? (addExpenseToFirestore(userInfo?.uid, newExpenseToAdd))
+    userInfo?.uid
+      ? (
+          addExpenseToFirestore(userInfo?.uid, newExpenseToAdd) &&
+          getArrFirestore()
+        )
       : (setExpenses([...expenses, newExpenseToAdd]))
 
-    // getArrFirestore(userInfo?.uid)
-    calculateRemaining()
     setExpenseAmount('')
     setExpenseConcept('')
   }
 
-  function addIncome (e) {
+  async function addIncome (e) {
     e.preventDefault()
 
     const newIncomeToAdd = {
@@ -89,12 +131,15 @@ function Home () {
       amount: Number(newIncome)
     }
 
-    userInfo.signinMethod !== 'anonymous'
-      ? (addIncomeToFirestore(userInfo?.uid, newIncomeToAdd))
-      : (setIncome(newIncome))
+    if (userInfo?.uid) {
+      await addIncomeToFirestore(userInfo?.uid, newIncomeToAdd)
+      await getIncomeFirestore()
+    } else {
+      setIncome(newIncome)
+      calculateRemaining()
+    }
 
-    setRemaining(newIncome)
-    calculateRemaining()
+    // setRemaining(newIncome)
     setNewIncome('')
   }
 
@@ -162,7 +207,7 @@ function Home () {
           <div className='resume-list'>
             <ul>
               {
-                userInfo.signinMethod === 'anonymous'
+                !userInfo?.uid
                   ? (
                       expenses.map((expense, index) => {
                         return (
@@ -170,26 +215,22 @@ function Home () {
                             <ListItem
                               amount={expense.amount}
                               concept={expense.concept}
-                              date={expense.date}
+                              date={expense.date.slice(0, 10)}
                             />
                           </li>
                         )
                       })
                     )
                   : (
-                      expensesArr?.map((expense) => {
+                      expensesArrRef?.map((expense, index) => {
                         return (
-                          expense?.map((exp, index) => {
-                            return (
-                              <li key={index}>
-                                <ListItem
-                                  amount={exp.amount}
-                                  concept={exp.concept}
-                                  date={exp.date}
-                                />
-                              </li>
-                            )
-                          })
+                          <li key={index}>
+                            <ListItem
+                              amount={expense.amount}
+                              concept={expense.concept}
+                              date={expense.date.slice(0, 10)}
+                            />
+                          </li>
                         )
                       })
                     )
@@ -216,7 +257,15 @@ function Home () {
           <ProgressBar
             remaining={percentage}
           />
-          <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(income)}</h5>
+          {
+            !userInfo?.uid
+              ? (
+                <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(income)}</h5>
+                )
+              : (
+                <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(userIncome?.amount)}</h5>
+                )
+          }
         </section>
       </main>
     </div>

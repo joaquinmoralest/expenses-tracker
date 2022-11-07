@@ -16,16 +16,23 @@ export function getUserInfo () {
   return currentUser
 }
 
-export function authStateChanged () {
+function mapUserLogged (user) {
+  const { uid } = user
+  const { displayName } = user
+  const { email } = user
+
+  return {
+    uid,
+    name: displayName,
+    email
+  }
+}
+
+export function authStateChanged (onChange) {
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User
-      const uid = user.uid;
-      // ...
-    } else {
-      // User is signed out
-      // ...
+      const formatedUser = mapUserLogged(user)
+      onChange(formatedUser)
     }
   })
 }
@@ -63,15 +70,7 @@ export async function loginGoogle () {
     .then(async () => {
       const userData = await signInWithPopup(auth, provider)
         .then((user) => {
-          const { uid } = user.user
-          const { displayName } = user.user
-          const { email } = user.user
-
-          return {
-            uid,
-            name: displayName,
-            email
-          }
+          return mapUserLogged(user)
         })
       return userData
     })
