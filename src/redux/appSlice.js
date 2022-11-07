@@ -7,8 +7,8 @@ const appSlice = createSlice({
     user: {
       uid: '',
       signinMethod: 'anonymous',
-      firstName: '',
-      lastName: ''
+      email: '',
+      name: ''
     },
     expenses: [],
     income: 0

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import Input from '../components/Input/Input'
 import { setUserInfo } from '../redux/appSlice'
 import '../styles/Register.css'
-import { getUserId, loginGoogle, registerAccount } from '../utils/auth'
+import { getUserInfo, loginGoogle, registerAccount } from '../utils/auth'
 
 function Register () {
   const [email, setEmail] = useState('')
@@ -17,10 +17,10 @@ function Register () {
     registerAccount(email, password)
 
     const user = {
-      uid: getUserId(),
+      uid: getUserInfo().uid,
       signinMethod: 'email',
-      firstName: '',
-      lastName: ''
+      name: '',
+      email: ''
     }
 
     dispatch(setUserInfo(user))
@@ -31,10 +31,10 @@ function Register () {
     loginGoogle()
 
     const user = {
-      uid: getUserId(),
+      uid: getUserInfo().uid,
       signinMethod: 'google',
-      firstName: '',
-      lastName: ''
+      name: '',
+      email: ''
     }
 
     dispatch(setUserInfo(user))
