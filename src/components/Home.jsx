@@ -25,6 +25,8 @@ function Home () {
   const [expenseAmount, setExpenseAmount] = useState('')
   const [expenseConcept, setExpenseConcept] = useState('')
   const [isMobile, setIsMobile] = useState(false)
+  const [isExpensesLoaded, setIsExpensesLoaded] = useState(false)
+  const [isIncomeLoaded, setIsIncomeLoaded] = useState(false)
 
   const userInfo = useSelector(state => state?.app?.user)
   const userIncome = useSelector(state => state?.app?.income)
@@ -36,7 +38,9 @@ function Home () {
     authStateChanged(user => dispatch(setUserInfo(user)))
   }, [])
 
-  useEffect(() => calculateRemaining(), [expenses, income, expensesArr])
+  useEffect(() => {
+    calculateRemaining()
+  }, [expenses, income, expensesArr, isExpensesLoaded, isIncomeLoaded])
 
   useEffect(() => {
     if (userInfo?.uid) {
@@ -53,15 +57,18 @@ function Home () {
 
   async function fetchData () {
     await getArrFirestore()
-    await getIncomeFirestore()
+    getIncomeFirestore()
       .then(calculateRemaining)
   }
 
   async function getArrFirestore () {
     try {
+      setIsExpensesLoaded(false)
+
       const expensesFirestore = await getExpensesFromFirestore(userInfo?.uid)
 
       dispatch(updateExpenses(expensesFirestore))
+      setIsExpensesLoaded(true)
     } catch (e) {
       console.log(`getExpensesFromFirestore failed, ${e}`)
     }
@@ -69,9 +76,12 @@ function Home () {
 
   async function getIncomeFirestore () {
     try {
+      setIsIncomeLoaded(false)
+
       getIncomeFromFirestore(userInfo?.uid)
         .then(income => {
           dispatch(updateIncome(income))
+          setIsIncomeLoaded(true)
         })
         .catch(error => {
           console.log('getIncomeFromFirestore error, ', error)
@@ -97,7 +107,7 @@ function Home () {
         newPercentage = (newRemaining / income) * 100
       )
     } else {
-      if (expensesArrRef) {
+      if (isExpensesLoaded && isIncomeLoaded) {
         expensesArrRef?.forEach((expense) => {
           totalExpenses = totalExpenses + expense.amount
         })
@@ -151,7 +161,6 @@ function Home () {
       setIncome(newIncome)
       calculateRemaining()
     }
-
     // setRemaining(newIncome)
     setNewIncome('')
   }
