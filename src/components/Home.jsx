@@ -5,20 +5,28 @@ import ListItem from './ListItem/ListItem'
 import ProgressBar from './ProgressBar'
 import { formatAmount } from '../utils/utils'
 import Input from './Input/Input'
-import { addExpenseToFirestore, addIncomeToFirestore, deleteExpenseFromFirestore, getExpensesFromFirestore, getIncomeFromFirestore } from '../utils/service'
+import {
+  addExpenseToFirestore,
+  addIncomeToFirestore,
+  deleteExpenseFromFirestore,
+  getExpensesFromFirestore,
+  getIncomeFromFirestore
+} from '../utils/service'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUserInfo, updateExpenses, updateIncome } from '../redux/appSlice'
 import { authStateChanged } from '../utils/auth'
 
 function Home () {
   const [remaining, setRemaining] = useState(0)
-  const [percentage, setPercentage] = useState(0)
+  const [percentage, setPercentage] = useState(100)
   const [expenses, setExpenses] = useState([])
   const [income, setIncome] = useState(0)
   const [newIncome, setNewIncome] = useState('')
   const [expenseAmount, setExpenseAmount] = useState('')
   const [expenseConcept, setExpenseConcept] = useState('')
   const [isMobile, setIsMobile] = useState(false)
+  const [isExpensesLoaded, setIsExpensesLoaded] = useState(false)
+  const [isIncomeLoaded, setIsIncomeLoaded] = useState(false)
 
   const userInfo = useSelector(state => state?.app?.user)
   const userIncome = useSelector(state => state?.app?.income)
@@ -30,7 +38,9 @@ function Home () {
     authStateChanged(user => dispatch(setUserInfo(user)))
   }, [])
 
-  useEffect(() => calculateRemaining(), [expenses, income, expensesArr])
+  useEffect(() => {
+    calculateRemaining()
+  }, [expenses, income, expensesArr, isExpensesLoaded, isIncomeLoaded])
 
   useEffect(() => {
     if (userInfo?.uid) {
@@ -47,16 +57,18 @@ function Home () {
 
   async function fetchData () {
     await getArrFirestore()
-    await getIncomeFirestore()
-    await calculateRemaining()
+    getIncomeFirestore()
+      .then(calculateRemaining)
   }
 
   async function getArrFirestore () {
     try {
+      setIsExpensesLoaded(false)
+
       const expensesFirestore = await getExpensesFromFirestore(userInfo?.uid)
 
       dispatch(updateExpenses(expensesFirestore))
-      calculateRemaining()
+      setIsExpensesLoaded(true)
     } catch (e) {
       console.log(`getExpensesFromFirestore failed, ${e}`)
     }
@@ -64,15 +76,16 @@ function Home () {
 
   async function getIncomeFirestore () {
     try {
+      setIsIncomeLoaded(false)
+
       getIncomeFromFirestore(userInfo?.uid)
         .then(income => {
           dispatch(updateIncome(income))
+          setIsIncomeLoaded(true)
         })
         .catch(error => {
           console.log('getIncomeFromFirestore error, ', error)
         })
-
-      calculateRemaining()
     } catch (error) {
       console.log(error)
     }
@@ -89,21 +102,29 @@ function Home () {
       })
 
       newRemaining = income - totalExpenses
-      newPercentage = (newRemaining / income) * 100
-    } else {
-      expensesArrRef?.forEach((expense) => {
-        totalExpenses = totalExpenses + expense.amount
-      })
 
-      newRemaining = userIncome?.amount - totalExpenses
-      newPercentage = (newRemaining / userIncome?.amount) * 100
+      income !== 0 && (
+        newPercentage = (newRemaining / income) * 100
+      )
+    } else {
+      if (isExpensesLoaded && isIncomeLoaded) {
+        expensesArrRef?.forEach((expense) => {
+          totalExpenses = totalExpenses + expense.amount
+        })
+
+        newRemaining = userIncome?.amount - totalExpenses
+
+        userIncome?.amount !== 0 && (
+          newPercentage = (newRemaining / userIncome?.amount) * 100
+        )
+      }
     }
 
     setRemaining(newRemaining)
     setPercentage(newPercentage.toFixed(0))
   }
 
-  function addExpenses (e) {
+  async function addExpenses (e) {
     e.preventDefault()
 
     const newExpenseToAdd = {
@@ -113,12 +134,13 @@ function Home () {
       concept: expenseConcept
     }
 
-    userInfo?.uid
-      ? (
-          addExpenseToFirestore(userInfo?.uid, newExpenseToAdd) &&
-          getArrFirestore()
-        )
-      : (setExpenses([...expenses, newExpenseToAdd]))
+    if (userInfo?.uid) {
+      await addExpenseToFirestore(userInfo?.uid, newExpenseToAdd)
+      await getArrFirestore()
+    } else {
+      setExpenses([...expenses, newExpenseToAdd])
+      calculateRemaining()
+    }
 
     setExpenseAmount('')
     setExpenseConcept('')
@@ -139,7 +161,6 @@ function Home () {
       setIncome(newIncome)
       calculateRemaining()
     }
-
     // setRemaining(newIncome)
     setNewIncome('')
   }

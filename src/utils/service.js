@@ -44,7 +44,7 @@ export async function addIncomeToFirestore (userId, newIncome) {
     const q = query(collection(db, userId, 'data', 'incomes'))
     const querySnapshot = await getDocs(q)
 
-    if (querySnapshot.length > 0) {
+    if (querySnapshot) {
       querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
         docToOverwrite = doc.id
