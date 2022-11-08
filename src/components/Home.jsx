@@ -5,7 +5,7 @@ import ListItem from './ListItem/ListItem'
 import ProgressBar from './ProgressBar'
 import { formatAmount } from '../utils/utils'
 import Input from './Input/Input'
-import { addExpenseToFirestore, addIncomeToFirestore, getExpensesFromFirestore, getIncomeFromFirestore } from '../utils/service'
+import { addExpenseToFirestore, addIncomeToFirestore, deleteExpenseFromFirestore, getExpensesFromFirestore, getIncomeFromFirestore } from '../utils/service'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUserInfo, updateExpenses, updateIncome } from '../redux/appSlice'
 import { authStateChanged } from '../utils/auth'
@@ -107,6 +107,7 @@ function Home () {
     e.preventDefault()
 
     const newExpenseToAdd = {
+      id: Date.now(),
       date: new Date().toISOString(),
       amount: Number(expenseAmount),
       concept: expenseConcept
@@ -141,6 +142,17 @@ function Home () {
 
     // setRemaining(newIncome)
     setNewIncome('')
+  }
+
+  function handleDeleteClick (id) {
+    if (!userInfo?.uid) {
+      const newExpenses = expenses.filter((expense) => expense.id !== id)
+
+      setExpenses(newExpenses)
+    } else {
+      deleteExpenseFromFirestore(userInfo?.uid, id)
+        .then(getArrFirestore)
+    }
   }
 
   function handleExpenseAmount (e) {
@@ -213,6 +225,7 @@ function Home () {
                         return (
                           <li key={index}>
                             <ListItem
+                              onClick={() => handleDeleteClick(expense.id)}
                               amount={expense.amount}
                               concept={expense.concept}
                               date={expense.date.slice(0, 10)}
@@ -226,6 +239,7 @@ function Home () {
                         return (
                           <li key={index}>
                             <ListItem
+                              onClick={() => handleDeleteClick(expense.id)}
                               amount={expense.amount}
                               concept={expense.concept}
                               date={expense.date.slice(0, 10)}

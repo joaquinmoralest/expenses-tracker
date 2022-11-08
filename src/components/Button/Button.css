@@ -1,7 +1,30 @@
 .btn-add {
   border: none;
   border-radius: 5px;
-  background-color: #089acb;
+  background-color: #058e1789;
+  color: #f7f7f7;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.btn-edit {
+  border: none;
+  border-radius: 5px;
+  background-color: #089acbaf;
+  color: #f7f7f7;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-right: .2rem;
+}
+
+.btn-delete {
+  border: none;
+  border-radius: 5px;
+  background-color: #cb1b0877;
   color: #f7f7f7;
   display: inline-flex;
   justify-content: center;

@@ -1,20 +1,19 @@
 import './Button.css'
 
-function Button({type, onClick}) {
-  return(
-    <button 
+function Button ({ type, onClick }) {
+  return (
+    <button
       onClick={onClick}
       className={
-        type === 'add' 
-          ? 'btn-add' 
-          : type === 'delete' 
-            ? 'btn-delete' 
-            : type === 'edit'
-              && 'btn-edit'
+        type === 'add'
+          ? 'btn-add'
+          : type === 'delete'
+            ? 'btn-delete'
+            : type === 'edit' && 'btn-edit'
       }
     >
-      <span className="material-symbols-outlined">
-        add
+      <span className='material-symbols-outlined'>
+        {type}
       </span>
     </button>
   )

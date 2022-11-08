@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
+import { getAnalytics } from 'firebase/analytics'
 import Navbar from './components/Navbar/Navbar'
 import { Route, Routes } from 'react-router-dom'
 import Login from './components/Login'
@@ -19,7 +20,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
-// const analytics = getAnalytics(app)
+export const analytics = getAnalytics(app)
 export const db = getFirestore(app)
 export const auth = getAuth(app)
 

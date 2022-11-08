@@ -1,6 +1,7 @@
 .resume-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .resume-item .resume-amount {
@@ -13,4 +14,7 @@
 
 .resume-item .resume-date {
   width: 9rem;
+  font-size: .9rem;
+  font-style: italic;
+  margin-right: .5rem;
 }
