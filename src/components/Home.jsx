@@ -5,7 +5,13 @@ import ListItem from './ListItem/ListItem'
 import ProgressBar from './ProgressBar'
 import { formatAmount } from '../utils/utils'
 import Input from './Input/Input'
-import { addExpenseToFirestore, addIncomeToFirestore, deleteExpenseFromFirestore, getExpensesFromFirestore, getIncomeFromFirestore } from '../utils/service'
+import {
+  addExpenseToFirestore,
+  addIncomeToFirestore,
+  deleteExpenseFromFirestore,
+  getExpensesFromFirestore,
+  getIncomeFromFirestore
+} from '../utils/service'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUserInfo, updateExpenses, updateIncome } from '../redux/appSlice'
 import { authStateChanged } from '../utils/auth'
@@ -48,7 +54,7 @@ function Home () {
   async function fetchData () {
     await getArrFirestore()
     await getIncomeFirestore()
-    await calculateRemaining()
+      .then(calculateRemaining)
   }
 
   async function getArrFirestore () {
@@ -56,7 +62,6 @@ function Home () {
       const expensesFirestore = await getExpensesFromFirestore(userInfo?.uid)
 
       dispatch(updateExpenses(expensesFirestore))
-      calculateRemaining()
     } catch (e) {
       console.log(`getExpensesFromFirestore failed, ${e}`)
     }
@@ -71,8 +76,6 @@ function Home () {
         .catch(error => {
           console.log('getIncomeFromFirestore error, ', error)
         })
-
-      calculateRemaining()
     } catch (error) {
       console.log(error)
     }
@@ -89,14 +92,22 @@ function Home () {
       })
 
       newRemaining = income - totalExpenses
-      newPercentage = (newRemaining / income) * 100
-    } else {
-      expensesArrRef?.forEach((expense) => {
-        totalExpenses = totalExpenses + expense.amount
-      })
 
-      newRemaining = userIncome?.amount - totalExpenses
-      newPercentage = (newRemaining / userIncome?.amount) * 100
+      income !== 0 && (
+        newPercentage = (newRemaining / income) * 100
+      )
+    } else {
+      if (expensesArrRef) {
+        expensesArrRef?.forEach((expense) => {
+          totalExpenses = totalExpenses + expense.amount
+        })
+
+        newRemaining = userIncome?.amount - totalExpenses
+
+        userIncome?.amount !== 0 && (
+          newPercentage = (newRemaining / userIncome?.amount) * 100
+        )
+      }
     }
 
     setRemaining(newRemaining)

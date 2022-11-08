@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from 'styled-components'
 
 export const Container = styled.div `
   height: 20px;
@@ -21,5 +21,5 @@ export const SubContainer = styled(Container) `
 export const Label = styled.span `
   font-size: 12px;
   color: #f7f7f7;
-  margin-right: 10px;
+  margin-right: 5px;
 `
