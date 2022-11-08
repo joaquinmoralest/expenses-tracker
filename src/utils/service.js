@@ -1,10 +1,12 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   query,
-  setDoc
+  setDoc,
+  where
 } from 'firebase/firestore'
 import { db } from '../App'
 
@@ -13,6 +15,26 @@ export async function addExpenseToFirestore (userId, newExpense) {
     await addDoc(collection(db, userId, 'data', 'expenses'), newExpense)
   } catch (e) {
     console.error('Error adding document', e)
+  }
+}
+
+export async function deleteExpenseFromFirestore (userId, expenseId) {
+  try {
+    const q = query(collection(db, userId, 'data', 'expenses'), where('id', '==', expenseId))
+    const querySnapshot = await getDocs(q)
+
+    let dataId
+
+    if (querySnapshot) {
+      querySnapshot.forEach((doc) => {
+        dataId = doc.id
+
+        return dataId
+      })
+    }
+    await deleteDoc(doc(db, userId, 'data', 'expenses', dataId))
+  } catch (e) {
+    console.error('Error deleting expense: ', e)
   }
 }
 
@@ -34,7 +56,7 @@ export async function addIncomeToFirestore (userId, newIncome) {
       await addDoc(collection(db, userId, 'data', 'incomes'), newIncome)
     }
   } catch (e) {
-    console.error('Error adding document: ', e)
+    console.error('Error adding income: ', e)
   }
 }
 
