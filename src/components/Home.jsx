@@ -12,7 +12,7 @@ import { authStateChanged } from '../utils/auth'
 
 function Home () {
   const [remaining, setRemaining] = useState(0)
-  const [percentage, setPercentage] = useState(0)
+  const [percentage, setPercentage] = useState(100)
   const [expenses, setExpenses] = useState([])
   const [income, setIncome] = useState(0)
   const [newIncome, setNewIncome] = useState('')
@@ -103,7 +103,7 @@ function Home () {
     setPercentage(newPercentage.toFixed(0))
   }
 
-  function addExpenses (e) {
+  async function addExpenses (e) {
     e.preventDefault()
 
     const newExpenseToAdd = {
@@ -113,12 +113,13 @@ function Home () {
       concept: expenseConcept
     }
 
-    userInfo?.uid
-      ? (
-          addExpenseToFirestore(userInfo?.uid, newExpenseToAdd) &&
-          getArrFirestore()
-        )
-      : (setExpenses([...expenses, newExpenseToAdd]))
+    if (userInfo?.uid) {
+      await addExpenseToFirestore(userInfo?.uid, newExpenseToAdd)
+      await getArrFirestore()
+    } else {
+      setExpenses([...expenses, newExpenseToAdd])
+      calculateRemaining()
+    }
 
     setExpenseAmount('')
     setExpenseConcept('')
