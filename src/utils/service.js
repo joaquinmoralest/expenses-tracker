@@ -44,7 +44,7 @@ export async function addIncomeToFirestore (userId, newIncome) {
     const q = query(collection(db, userId, 'data', 'incomes'))
     const querySnapshot = await getDocs(q)
 
-    if (querySnapshot) {
+    if (querySnapshot.docs.length > 0) {
       querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
         docToOverwrite = doc.id
@@ -93,5 +93,27 @@ export async function getIncomeFromFirestore (userId) {
     return income
   } catch (e) {
     console.log(e)
+  }
+}
+
+export async function addUserInfoToFirestore (user, userId) {
+  try {
+    let docToOverwrite
+    const q = query(collection(db, userId, 'data', 'userInfo'))
+    const querySnapshot = await getDocs(q)
+
+    if (querySnapshot.docs.length > 0) {
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        docToOverwrite = doc.id
+      })
+
+      const docRef = doc(db, userId, 'data', 'userInfo', docToOverwrite)
+      setDoc(docRef, user, { merge: true })
+    } else {
+      await addDoc(collection(db, userId, 'data', 'userInfo'), user)
+    }
+  } catch (e) {
+    console.error('Error adding document', e)
   }
 }
