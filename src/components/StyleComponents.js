@@ -15,7 +15,7 @@ export const SubContainer = styled(Container) `
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  transition: .5s ease-in-out; 
+  transition: .8s ease-in-out; 
 `
 
 export const Label = styled.span `
