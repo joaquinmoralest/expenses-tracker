@@ -17,9 +17,7 @@ export function getUserInfo () {
 }
 
 function mapUserLogged (user) {
-  const { uid } = user
-  const { displayName } = user
-  const { email } = user
+  const { uid, displayName, email } = user
 
   return {
     uid,
@@ -38,16 +36,19 @@ export function authStateChanged (onChange) {
 }
 
 export async function registerAccount (email, password) {
-  createUserWithEmailAndPassword(auth, email, password)
+  const user = createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user
       window.localStorage.setItem('user_temp_data', JSON.stringify(user))
+
+      return user
     })
     .catch((error) => {
       const errorCode = error.code
       const errorMessage = error.message
       console.log(`Error code ${errorCode}: ${errorMessage}`)
     })
+  return user
 }
 
 export async function LoginWithEmail (email, password) {
@@ -69,8 +70,8 @@ export async function loginGoogle () {
   const userData = await setPersistence(auth, browserLocalPersistence)
     .then(async () => {
       const userData = await signInWithPopup(auth, provider)
-        .then((user) => {
-          return mapUserLogged(user)
+        .then((result) => {
+          return mapUserLogged(result.user)
         })
       return userData
     })
