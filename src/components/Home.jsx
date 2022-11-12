@@ -15,6 +15,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { setUserInfo, updateExpenses, updateIncome } from '../redux/appSlice'
 import { authStateChanged } from '../utils/auth'
+import Spinner from './Spinner/Spinner'
 
 function Home () {
   const [remaining, setRemaining] = useState(0)
@@ -27,6 +28,7 @@ function Home () {
   const [isMobile, setIsMobile] = useState(false)
   const [isExpensesLoaded, setIsExpensesLoaded] = useState(false)
   const [isIncomeLoaded, setIsIncomeLoaded] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const userInfo = useSelector(state => state?.app?.user)
   const userIncome = useSelector(state => state?.app?.income)
@@ -56,9 +58,11 @@ function Home () {
   }, [])
 
   async function fetchData () {
+    setIsLoading(true)
     await getArrFirestore()
     getIncomeFirestore()
       .then(calculateRemaining)
+    setIsLoading(false)
   }
 
   async function getArrFirestore () {
@@ -256,18 +260,24 @@ function Home () {
                       })
                     )
                   : (
-                      expensesArrRef?.map((expense, index) => {
-                        return (
-                          <li key={index}>
-                            <ListItem
-                              onClick={() => handleDeleteClick(expense.id)}
-                              amount={expense.amount}
-                              concept={expense.concept}
-                              date={expense.date.slice(0, 10)}
-                            />
-                          </li>
-                        )
-                      })
+                      isLoading
+                        ? (
+                          <Spinner />
+                          )
+                        : (
+                            expensesArrRef?.map((expense, index) => {
+                              return (
+                                <li key={index}>
+                                  <ListItem
+                                    onClick={() => handleDeleteClick(expense.id)}
+                                    amount={expense.amount}
+                                    concept={expense.concept}
+                                    date={expense.date.slice(0, 10)}
+                                  />
+                                </li>
+                              )
+                            })
+                          )
                     )
               }
             </ul>
