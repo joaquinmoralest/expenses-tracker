@@ -27,6 +27,7 @@ function Navbar () {
           !userInfo?.uid
             ? (
               <>
+                <Link to='/budget'>Presupuesto</Link>
                 <Link to='/login'>Iniciar sesión</Link>
                 <Link to='/register'>Crear cuenta</Link>
               </>

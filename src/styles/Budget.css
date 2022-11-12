@@ -1,0 +1,59 @@
+.budget-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.budget-container {
+  width: 90%;
+  max-width: 1000px;
+  padding: 1.5rem;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background-color: rgba(255, 255, 255, .5);
+  border-radius: 10px;
+}
+
+main.budget-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.budget-title {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+.budget-intro {
+  color: #004d7a;
+}
+
+.budget-planning {
+  width: 95%;
+  color: #004d7a;
+}
+
+.budget-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.resume-budget {
+  margin-top: 1rem;
+}
+
+.budget-report {
+  width: 95%;
+  color: #004d7a;
+}
+
+.select-category {
+  max-width: 150px;
+  width: 100%;
+  padding: 4px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 5px;
+}
