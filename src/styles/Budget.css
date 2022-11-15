@@ -30,7 +30,7 @@ main.budget-container {
 }
 
 .budget-planning {
-  width: 95%;
+  width: 90%;
   color: #004d7a;
 }
 
@@ -42,11 +42,18 @@ main.budget-container {
 
 .resume-budget {
   margin-top: 1rem;
+  text-align: left;
 }
 
 .budget-report {
-  width: 95%;
+  width: 90%;
   color: #004d7a;
+}
+
+.pie-chart {
+  width: 90%;
+  max-width: 380px;
+  margin: 0 auto;
 }
 
 .select-category {

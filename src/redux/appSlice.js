@@ -10,7 +10,19 @@ const appSlice = createSlice({
       name: ''
     },
     expenses: [],
-    income: 0
+    income: 0,
+    categories: {
+      home: 0,
+      services: 0,
+      education: 0,
+      hygiene: 0,
+      transport: 0,
+      food: 0,
+      personal: 0,
+      savings: 0,
+      recreation: 0,
+      others: 0
+    }
   },
   reducers: {
     changeLoading: (state, action) => {
@@ -34,6 +46,9 @@ const appSlice = createSlice({
     updateIncome: (state, action) => {
       state.income = action.payload
     },
+    updateCategories: (state, action) => {
+      state.income = action.payload
+    },
     clearExpenses: (state) => {
       state.expenses = []
     },
@@ -43,5 +58,5 @@ const appSlice = createSlice({
   }
 })
 
-export const { changeLoading, setUserInfo, updateExpenses, updateIncome, clearExpenses, clearIncome, clearUserInfo } = appSlice.actions
+export const { changeLoading, setUserInfo, updateExpenses, updateIncome, clearExpenses, clearIncome, clearUserInfo, updateCategories } = appSlice.actions
 export default appSlice.reducer

@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setUserInfo, updateExpenses, updateIncome } from '../redux/appSlice'
 import { authStateChanged } from '../utils/auth'
 import Spinner from './Spinner/Spinner'
+import _ from 'lodash'
 
 function Home () {
   const [remaining, setRemaining] = useState(0)
@@ -246,18 +247,19 @@ function Home () {
               {
                 !userInfo?.uid
                   ? (
-                      expenses.map((expense, index) => {
-                        return (
-                          <li key={index}>
-                            <ListItem
-                              onClick={() => handleDeleteClick(expense.id)}
-                              amount={expense.amount}
-                              concept={expense.concept}
-                              date={expense.date.slice(0, 10)}
-                            />
-                          </li>
-                        )
-                      })
+                      _.orderBy(expenses, ['date', 'asc'])
+                        .map((expense, index) => {
+                          return (
+                            <li key={index}>
+                              <ListItem
+                                onClick={() => handleDeleteClick(expense.id)}
+                                amount={expense.amount}
+                                concept={expense.concept}
+                                date={expense.date.slice(0, 10)}
+                              />
+                            </li>
+                          )
+                        })
                     )
                   : (
                       isLoading
@@ -265,18 +267,19 @@ function Home () {
                           <Spinner />
                           )
                         : (
-                            expensesArrRef?.map((expense, index) => {
-                              return (
-                                <li key={index}>
-                                  <ListItem
-                                    onClick={() => handleDeleteClick(expense.id)}
-                                    amount={expense.amount}
-                                    concept={expense.concept}
-                                    date={expense.date.slice(0, 10)}
-                                  />
-                                </li>
-                              )
-                            })
+                            _.orderBy(expensesArrRef, ['date', 'asc'])
+                              .map((expense, index) => {
+                                return (
+                                  <li key={index}>
+                                    <ListItem
+                                      onClick={() => handleDeleteClick(expense.id)}
+                                      amount={expense.amount}
+                                      concept={expense.concept}
+                                      date={expense.date.slice(0, 10)}
+                                    />
+                                  </li>
+                                )
+                              })
                           )
                     )
               }
