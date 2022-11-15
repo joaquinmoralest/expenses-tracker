@@ -7,6 +7,7 @@ import { Route, Routes } from 'react-router-dom'
 import Login from './components/Login'
 import Register from './components/Register'
 import Home from './components/Home'
+import Budget from './components/Budget'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDKQa-sQRAaIZD5SWf7Ksez57nBviqbpzs',
@@ -40,6 +41,10 @@ function App () {
         <Route
           path='/register'
           element={<Register />}
+        />
+        <Route
+          path='/budget'
+          element={<Budget />}
         />
       </Routes>
     </div>
