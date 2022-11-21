@@ -2,19 +2,21 @@ import '../styles/Budget.css'
 import Button from './Button/Button'
 import Input from './Input/Input'
 import { CATEGORIES as categories, CATEGORIES_COLORS as categoriesColors } from '../utils/constants'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ListItem from './ListItem/ListItem'
 import _ from 'lodash'
 import 'chart.js/auto'
 import { Chart } from 'react-chartjs-2'
+import { useDispatch, useSelector } from 'react-redux'
+import { addBudgetItemsToFirestore, deleteBudgetItemFromFirestore, getBudgetItemsFromFirestore } from '../utils/service'
+import { setUserInfo, updateBudgetItems } from '../redux/appSlice'
+import { authStateChanged } from '../utils/auth'
 
 function Budget () {
   const [budgetItem, setBudgetItem] = useState([])
   const [amount, setAmount] = useState('')
   const [concept, setConcept] = useState('')
   const [category, setCategory] = useState('')
-  // const [categoriesFromBudget, setCategoriesFromBudget] = useState([])
-  // const [categoriesFromBudgetFiltred, setCategoriesFromBudgetFiltred] = useState([])
   const [vivienda, setVivienda] = useState(0)
   const [servicios, setServicios] = useState(0)
   const [educacion, setEducacion] = useState(0)
@@ -25,7 +27,11 @@ function Budget () {
   const [ahorro, setAhorro] = useState(0)
   const [recreacion, setRecreacion] = useState(0)
   const [otros, setOtros] = useState(0)
-  const reportData = {
+  const userInfo = useSelector(state => state?.app?.user)
+  const budgetItemArr = useSelector(state => state?.app?.budget?.budgetItems)
+  const budgetItemArrRef = budgetItemArr[0]
+  const dispatch = useDispatch()
+  const reportDataAnonymous = {
     labels: [
       'Vivienda',
       'Servicios',
@@ -58,22 +64,66 @@ function Budget () {
     }]
   }
 
-  // Extrae las categorias de cada item del presupuesto
-  // useEffect(() => {
-  //   const categoryItem = budgetItem.map((item) => {
-  //     return item.category
-  //   })
+  useEffect(() => {
+    authStateChanged(user => dispatch(setUserInfo(user)))
+  }, [])
 
-  //   setCategoriesFromBudget([...categoryItem])
-  // }, [budgetItem])
+  useEffect(() => {
+    if (userInfo?.uid) {
+      fetchData()
+    } else {
+      setVivienda(0)
+      setServicios(0)
+      setEducacion(0)
+      setHigiene(0)
+      setTransporte(0)
+      setAlimentacion(0)
+      setPersonal(0)
+      setAhorro(0)
+      setRecreacion(0)
+      setOtros(0)
+    }
+  }, [userInfo])
 
-  // Filtra las categorias para eliminar duplicados
-  // useEffect(() => {
-  //   const dataArr = new Set(categoriesFromBudget)
-  //   setCategoriesFromBudgetFiltred([...dataArr])
-  // }, [budgetItem])
+  function getTotalByCategory () {
+    budgetItemArrRef.forEach(item => {
+      if (item.category === 'Vivienda') {
+        setVivienda(() => vivienda + item.amount)
+      } else if (item.category === 'Servicios') {
+        setServicios(servicios + item.amount)
+      } else if (item.category === 'Educacion') {
+        setEducacion(educacion + item.amount)
+      } else if (item.category === 'Higiene') {
+        setHigiene(higiene + item.amount)
+      } else if (item.category === 'Transporte') {
+        setTransporte(transporte + item.amount)
+      } else if (item.category === 'Alimentacion') {
+        setAlimentacion(alimentacion + item.amount)
+      } else if (item.category === 'Personal') {
+        setPersonal(personal + item.amount)
+      } else if (item.category === 'Ahorro') {
+        setAhorro(ahorro + item.amount)
+      } else if (item.category === 'Recreacion') {
+        setRecreacion(recreacion + item.amount)
+      } else if (item.category === 'Otros') {
+        setOtros(otros + item.amount)
+      }
+    })
+  }
+  console.log(vivienda)
 
-  function handleSubmit (e) {
+  async function fetchData () {
+    await getBudgetItems(userInfo?.uid)
+    await getTotalByCategory()
+  }
+
+  async function getBudgetItems (userId) {
+    const data = await getBudgetItemsFromFirestore(userId)
+
+    dispatch(updateBudgetItems(data))
+  }
+
+  async function handleSubmit (e) {
     e.preventDefault()
 
     const newBudgetItenToAdd = {
@@ -84,6 +134,12 @@ function Budget () {
     }
 
     setBudgetItem([...budgetItem, newBudgetItenToAdd])
+
+    if (userInfo?.uid) {
+      await addBudgetItemsToFirestore(userInfo?.uid, newBudgetItenToAdd)
+      await getBudgetItems(userInfo?.uid)
+    }
+
     if (category === 'Vivienda') {
       const newAmount = Number(amount)
       setVivienda(vivienda + newAmount)
@@ -120,8 +176,14 @@ function Budget () {
     setConcept('')
   }
 
-  function handleDeleteClick (itemToDelete) {
+  async function handleDeleteClick (itemToDelete) {
     const newBudgetItem = budgetItem.filter((item) => item.id !== itemToDelete.id)
+
+    setBudgetItem(newBudgetItem)
+
+    if (userInfo?.uid) {
+      await deleteBudgetItemFromFirestore(userInfo?.uid, itemToDelete.id)
+    }
 
     if (itemToDelete.category === 'Vivienda') {
       const amount = itemToDelete.amount
@@ -164,7 +226,7 @@ function Budget () {
       setOtros(otros - amount)
     }
 
-    setBudgetItem(newBudgetItem)
+    getBudgetItems(userInfo?.uid)
   }
 
   function handleAmount (e) {
@@ -234,19 +296,37 @@ function Budget () {
           <div className='resume-budget'>
             <ul>
               {
-                _.orderBy(budgetItem, ['category', 'amount'], ['asc', 'desc'])
-                  .map((item) => {
-                    return (
-                      <li key={item.id}>
-                        <ListItem
-                          onClick={() => handleDeleteClick(item)}
-                          amount={item.amount}
-                          concept={item.concept}
-                          category={item.category}
-                        />
-                      </li>
+                !userInfo?.uid
+                  ? (
+                      _.orderBy(budgetItem, ['category', 'amount'], ['asc', 'desc'])
+                        .map((item) => {
+                          return (
+                            <li key={item.id}>
+                              <ListItem
+                                onClick={() => handleDeleteClick(item)}
+                                amount={item.amount}
+                                concept={item.concept}
+                                category={item.category}
+                              />
+                            </li>
+                          )
+                        })
                     )
-                  })
+                  : (
+                      _.orderBy(budgetItemArrRef, ['category', 'amount'], ['asc', 'desc'])
+                        .map((item) => {
+                          return (
+                            <li key={item.id}>
+                              <ListItem
+                                onClick={() => handleDeleteClick(item)}
+                                amount={item.amount}
+                                concept={item.concept}
+                                category={item.category}
+                              />
+                            </li>
+                          )
+                        })
+                    )
               }
             </ul>
           </div>
@@ -256,7 +336,7 @@ function Budget () {
           <div className='pie-chart'>
             <Chart
               type='pie'
-              data={reportData}
+              data={reportDataAnonymous}
             />
           </div>
         </div>

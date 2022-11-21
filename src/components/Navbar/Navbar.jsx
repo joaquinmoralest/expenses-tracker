@@ -23,11 +23,11 @@ function Navbar () {
       </div>
       <div className='nav-links'>
         <Link to='/'>Inicio</Link>
+        <Link to='/budget'>Presupuesto</Link>
         {
           !userInfo?.uid
             ? (
               <>
-                <Link to='/budget'>Presupuesto</Link>
                 <Link to='/login'>Iniciar sesión</Link>
                 <Link to='/register'>Crear cuenta</Link>
               </>
