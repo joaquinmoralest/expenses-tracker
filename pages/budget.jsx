@@ -1,9 +1,8 @@
-import '../styles/Budget.css'
-import Button from './Button/Button'
-import Input from './Input/Input'
+import Button from '../components/Button/Button'
+import Input from '../components/Input/Input'
 import { CATEGORIES as categories, CATEGORIES_COLORS as categoriesColors } from '../utils/constants'
 import { useState, useEffect } from 'react'
-import ListItem from './ListItem/ListItem'
+import ListItem from '../components/ListItem/ListItem'
 import _ from 'lodash'
 import 'chart.js/auto'
 import { Chart } from 'react-chartjs-2'
@@ -11,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addBudgetItemsToFirestore, deleteBudgetItemFromFirestore, getBudgetItemsFromFirestore } from '../utils/service'
 import { setUserInfo, updateBudgetItems } from '../redux/appSlice'
 import { authStateChanged } from '../utils/auth'
+import Layout from '../components/Layout'
 
 function Budget () {
   const [budgetItem, setBudgetItem] = useState([])
@@ -242,106 +242,108 @@ function Budget () {
   }
 
   return (
-    <div className="budget-page">
-      <div className='budget-title'>
-        <h2>Presupuesto</h2>
-      </div>
-      <div className="budget-container">
-        <div className='budget-intro txt-center'>
-          <p className='mb-1'>Una de las partes principales de todo sistema financiero saludable es la elaboracion de un presupuesto.</p>
-          <p>Utiliza esta herramienta para fijar los gastos que tienes mensualmente y asi ordenar tus finanzas a medida que gastas segun lo planificado.</p>
+    <Layout>
+      <div className="budget-page">
+        <div className='budget-title'>
+          <h2>Presupuesto</h2>
         </div>
-      </div>
+        <div className="budget-container">
+          <div className='budget-intro txt-center'>
+            <p className='mb-1'>Una de las partes principales de todo sistema financiero saludable es la elaboracion de un presupuesto.</p>
+            <p>Utiliza esta herramienta para fijar los gastos que tienes mensualmente y asi ordenar tus finanzas a medida que gastas segun lo planificado.</p>
+          </div>
+        </div>
 
-      <main className="budget-container">
-        <div className='budget-planning txt-center'>
-          <h3>Gastos mensuales</h3>
-          <form className='budget-form' onSubmit={handleSubmit}>
-            <Input
-              onChange={handleAmount}
-              name='expenseAmount'
-              className='w-5'
-              placeholder='Monto'
-              type='number'
-              value={amount}
-              required
-            />
-            <Input
-              onChange={handleConcept}
-              name='expenseConcept'
-              placeholder='Concepto'
-              type='text'
-              value={concept}
-              required
-            />
-            <select
-              className='select-category'
-              onChange={handleCategory}
-              name="categories"
-              id="categories"
-              required
-            >
-              {
-                categories.map((category) => {
-                  return (
-                    <option key={category.name} value={category.name}>{category.name}</option>
-                  )
-                })
-              }
-            </select>
-            <Button
-              type='add'
-            />
-          </form>
-          <div className='resume-budget'>
-            <ul>
-              {
-                !userInfo?.uid
-                  ? (
-                      _.orderBy(budgetItem, ['category', 'amount'], ['asc', 'desc'])
-                        .map((item) => {
-                          return (
-                            <li key={item.id}>
-                              <ListItem
-                                onClick={() => handleDeleteClick(item)}
-                                amount={item.amount}
-                                concept={item.concept}
-                                category={item.category}
-                              />
-                            </li>
-                          )
-                        })
+        <main className="budget-container">
+          <div className='budget-planning txt-center'>
+            <h3>Gastos mensuales</h3>
+            <form className='budget-form' onSubmit={handleSubmit}>
+              <Input
+                onChange={handleAmount}
+                name='expenseAmount'
+                className='w-5'
+                placeholder='Monto'
+                type='number'
+                value={amount}
+                required
+              />
+              <Input
+                onChange={handleConcept}
+                name='expenseConcept'
+                placeholder='Concepto'
+                type='text'
+                value={concept}
+                required
+              />
+              <select
+                className='select-category'
+                onChange={handleCategory}
+                name="categories"
+                id="categories"
+                required
+              >
+                {
+                  categories.map((category) => {
+                    return (
+                      <option key={category.name} value={category.name}>{category.name}</option>
                     )
-                  : (
-                      _.orderBy(budgetItemArrRef, ['category', 'amount'], ['asc', 'desc'])
-                        .map((item) => {
-                          return (
-                            <li key={item.id}>
-                              <ListItem
-                                onClick={() => handleDeleteClick(item)}
-                                amount={item.amount}
-                                concept={item.concept}
-                                category={item.category}
-                              />
-                            </li>
-                          )
-                        })
-                    )
-              }
-            </ul>
+                  })
+                }
+              </select>
+              <Button
+                type='add'
+              />
+            </form>
+            <div className='resume-budget'>
+              <ul>
+                {
+                  !userInfo?.uid
+                    ? (
+                        _.orderBy(budgetItem, ['category', 'amount'], ['asc', 'desc'])
+                          .map((item) => {
+                            return (
+                              <li key={item.id}>
+                                <ListItem
+                                  onClick={() => handleDeleteClick(item)}
+                                  amount={item.amount}
+                                  concept={item.concept}
+                                  category={item.category}
+                                />
+                              </li>
+                            )
+                          })
+                      )
+                    : (
+                        _.orderBy(budgetItemArrRef, ['category', 'amount'], ['asc', 'desc'])
+                          .map((item) => {
+                            return (
+                              <li key={item.id}>
+                                <ListItem
+                                  onClick={() => handleDeleteClick(item)}
+                                  amount={item.amount}
+                                  concept={item.concept}
+                                  category={item.category}
+                                />
+                              </li>
+                            )
+                          })
+                      )
+                }
+              </ul>
+            </div>
           </div>
-        </div>
-        <div className='budget-report txt-center'>
-          <h3>Reporte</h3>
-          <div className='pie-chart'>
-            <Chart
-              type='pie'
-              data={reportDataAnonymous}
-            />
+          <div className='budget-report txt-center'>
+            <h3>Reporte</h3>
+            <div className='pie-chart'>
+              <Chart
+                type='pie'
+                data={reportDataAnonymous}
+              />
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </Layout>
   )
 }
 

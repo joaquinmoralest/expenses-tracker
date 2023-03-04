@@ -1,22 +1,22 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import Input from './Input/Input'
+import Input from '../components/Input/Input'
 import { loginGoogle, LoginWithEmail } from '../utils/auth'
-import '../styles/Login.css'
 import { useDispatch } from 'react-redux'
 import { setUserInfo } from '../redux/appSlice'
+import Layout from '../components/Layout'
+import { useRouter } from 'next/router'
 
 function Login () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const navigate = useNavigate()
   const dispatch = useDispatch()
+  const router = useRouter()
 
   async function handleSubmit (e) {
     e.preventDefault()
     await LoginWithEmail(email, password)
 
-    navigate('/')
+    router.push('/')
   }
 
   async function login () {
@@ -32,11 +32,11 @@ function Login () {
       })
 
     dispatch(setUserInfo(userData))
-    navigate('/')
+    router.push('/')
   }
 
   return (
-    <>
+    <Layout>
       <div className='login'>
         <div className='login-container'>
           <div className='logo'>
@@ -60,7 +60,7 @@ function Login () {
           <button className='btn-login' onClick={login}>Login with Google</button>
         </div>
       </div>
-    </>
+    </Layout>
   )
 }
 

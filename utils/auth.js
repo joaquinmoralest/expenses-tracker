@@ -8,7 +8,7 @@ import {
   signInWithPopup,
   signOut
 } from 'firebase/auth'
-import { auth } from '../App'
+import { auth } from '../pages/_app'
 
 export function getUserInfo () {
   const currentUser = auth.currentUser
