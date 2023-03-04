@@ -1,5 +1,3 @@
-import './Input.css'
-
 function Input ({ type, name, placeholder, className, onChange, value, required, disabled }) {
   return (
     <input

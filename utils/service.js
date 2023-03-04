@@ -8,7 +8,7 @@ import {
   setDoc,
   where
 } from 'firebase/firestore'
-import { db } from '../App'
+import { db } from '../pages/_app'
 
 export async function addExpenseToFirestore (userId, newExpense) {
   try {

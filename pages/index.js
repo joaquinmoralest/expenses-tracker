@@ -1,10 +1,9 @@
-import '../styles/App.css'
+// import '../styles/App.css'
 import { useState, useEffect } from 'react'
-import Button from './Button/Button'
-import ListItem from './ListItem/ListItem'
-import ProgressBar from './ProgressBar'
+import Button from '../components/Button/Button'
+import ListItem from '../components/ListItem/ListItem'
 import { formatAmount } from '../utils/utils'
-import Input from './Input/Input'
+import Input from '../components/Input/Input'
 import {
   addExpenseToFirestore,
   addIncomeToFirestore,
@@ -15,8 +14,10 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { setUserInfo, updateExpenses, updateIncome } from '../redux/appSlice'
 import { authStateChanged } from '../utils/auth'
-import Spinner from './Spinner/Spinner'
+import Spinner from '../components/Spinner/Spinner'
 import _ from 'lodash'
+import Layout from '../components/Layout'
+import ProgressBar from '../components/ProgressBar'
 
 function Home () {
   const [remaining, setRemaining] = useState(0)
@@ -194,129 +195,130 @@ function Home () {
   }
 
   return (
-    <div className='container'>
-      <div className='title'>
-        {
-          !isMobile
-            ? (
-              <>
-                <h1>Seguimiento de gastos</h1>
-                <h3>Ordena tus finanzas partiendo por conocer tus habitos</h3>
-              </>
-              )
-            : (
-              <>
-                <h2>Seguimiento de gastos</h2>
-                <h4>Ordena tus finanzas partiendo por conocer tus habitos</h4>
-              </>
-              )
-        }
-      </div>
+    <Layout>
 
-      <main className='main-content'>
-        <section className='expenses'>
-          <h4 className='txt-center'>Gastos</h4>
-          <form
-            className='form'
-            onSubmit={addExpenses}
-          >
-            <Input
-              onChange={handleExpenseAmount}
-              name='expenseAmount'
-              className='w-5'
-              placeholder='Monto'
-              type='number'
-              value={expenseAmount}
-              required
-            />
-            <Input
-              onChange={handleExpenseConcept}
-              name='expenseConcept'
-              placeholder='Concepto'
-              type='text'
-              value={expenseConcept}
-              required
-            />
-            <Button
-              type='add'
-            />
-          </form>
-
-          <div className='resume-list'>
-            <ul>
-              {
-                !userInfo?.uid
-                  ? (
-                      _.orderBy(expenses, ['date', 'asc'])
-                        .map((expense, index) => {
-                          return (
-                            <li key={index}>
-                              <ListItem
-                                onClick={() => handleDeleteClick(expense.id)}
-                                amount={expense.amount}
-                                concept={expense.concept}
-                                date={expense.date.slice(0, 10)}
-                              />
-                            </li>
-                          )
-                        })
-                    )
-                  : (
-                      isLoading
-                        ? (
-                          <Spinner />
-                          )
-                        : (
-                            _.orderBy(expensesArrRef, ['date', 'asc'])
-                              .map((expense, index) => {
-                                return (
-                                  <li key={index}>
-                                    <ListItem
-                                      onClick={() => handleDeleteClick(expense.id)}
-                                      amount={expense.amount}
-                                      concept={expense.concept}
-                                      date={expense.date.slice(0, 10)}
-                                    />
-                                  </li>
-                                )
-                              })
-                          )
-                    )
-              }
-            </ul>
-          </div>
-        </section>
-
-        <section className='budget'>
-          <h4 className='txt-center'>Ingresos</h4>
-          <form className='form' onSubmit={addIncome}>
-            <Input
-              onChange={handleIncome}
-              name='incomeAmount'
-              placeholder='Tu ingreso total para este mes...'
-              type='number'
-              value={newIncome}
-            />
-            <Button
-              type='add'
-            />
-          </form>
-          <h4 className='txt-center mt-3'>Presupuesto</h4>
-          <ProgressBar
-            remaining={percentage}
-          />
+      <div className='container'>
+        <div className='title'>
           {
-            !userInfo?.uid
+            !isMobile
               ? (
-                <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(income)}</h5>
+                <>
+                  <h1>Seguimiento de gastos</h1>
+                  <h3>Ordena tus finanzas partiendo por conocer tus habitos</h3>
+                </>
                 )
               : (
-                <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(userIncome?.amount)}</h5>
+                <>
+                  <h2>Seguimiento de gastos</h2>
+                  <h4>Ordena tus finanzas partiendo por conocer tus habitos</h4>
+                </>
                 )
           }
-        </section>
-      </main>
-    </div>
+        </div>
+
+        <main className='main-content'>
+          <section className='expenses'>
+            <h4 className='txt-center'>Gastos</h4>
+            <form
+              className='form'
+              onSubmit={addExpenses}
+            >
+              <Input
+                onChange={handleExpenseAmount}
+                name='expenseAmount'
+                className='w-5'
+                placeholder='Monto'
+                type='number'
+                value={expenseAmount}
+                required
+              />
+              <Input
+                onChange={handleExpenseConcept}
+                name='expenseConcept'
+                placeholder='Concepto'
+                type='text'
+                value={expenseConcept}
+                required
+              />
+              <Button
+                type='add'
+              />
+            </form>
+
+            <div className='resume-list'>
+              <ul>
+                {
+                  !userInfo?.uid
+                    ? (
+                        _.orderBy(expenses, ['date', 'asc'])
+                          .map((expense, index) => {
+                            return (
+                              <li key={index}>
+                                <ListItem
+                                  onClick={() => handleDeleteClick(expense.id)}
+                                  amount={expense.amount}
+                                  concept={expense.concept}
+                                  date={expense.date.slice(0, 10)}
+                                />
+                              </li>
+                            )
+                          })
+                      )
+                    : (
+                        isLoading
+                          ? (
+                            <Spinner />
+                            )
+                          : (
+                              _.orderBy(expensesArrRef, ['date', 'asc'])
+                                .map((expense, index) => {
+                                  return (
+                                    <li key={index}>
+                                      <ListItem
+                                        onClick={() => handleDeleteClick(expense.id)}
+                                        amount={expense.amount}
+                                        concept={expense.concept}
+                                        date={expense.date.slice(0, 10)}
+                                      />
+                                    </li>
+                                  )
+                                })
+                            )
+                      )
+                }
+              </ul>
+            </div>
+          </section>
+
+          <section className='budget'>
+            <h4 className='txt-center'>Ingresos</h4>
+            <form className='form' onSubmit={addIncome}>
+              <Input
+                onChange={handleIncome}
+                name='incomeAmount'
+                placeholder='Tu ingreso total para este mes...'
+                type='number'
+                value={newIncome}
+              />
+              <Button
+                type='add'
+              />
+            </form>
+            <h4 className='txt-center mt-3'>Presupuesto</h4>
+            <ProgressBar remaining={percentage} />
+            {
+              !userInfo?.uid
+                ? (
+                  <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(income)}</h5>
+                  )
+                : (
+                  <h5 className='txt-center'>{formatAmount(remaining)} de {formatAmount(userIncome?.amount)}</h5>
+                  )
+            }
+          </section>
+        </main>
+      </div>
+    </Layout>
   )
 }
 

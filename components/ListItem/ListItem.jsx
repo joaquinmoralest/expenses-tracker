@@ -1,6 +1,5 @@
 import { formatAmount } from '../../utils/utils'
 import Button from '../Button/Button'
-import './ListItem.css'
 
 function ListItem ({ amount, concept, date, onClick, category }) {
   return (

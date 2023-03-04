@@ -1,8 +1,7 @@
+import Link from 'next/link'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
 import { clearExpenses, clearIncome, clearUserInfo } from '../../redux/appSlice'
 import { signOutAccount } from '../../utils/auth'
-import './Navbar.css'
 
 function Navbar () {
   const userInfo = useSelector(state => state?.app?.user)
@@ -22,14 +21,14 @@ function Navbar () {
         <img src='' alt='' />
       </div>
       <div className='nav-links'>
-        <Link to='/'>Inicio</Link>
-        <Link to='/budget'>Presupuesto</Link>
+        <Link href='/'>Inicio</Link>
+        <Link href='/budget'>Presupuesto</Link>
         {
           !userInfo?.uid
             ? (
               <>
-                <Link to='/login'>Iniciar sesión</Link>
-                <Link to='/register'>Crear cuenta</Link>
+                <Link href='/login'>Iniciar sesión</Link>
+                <Link href='/register'>Crear cuenta</Link>
               </>
               )
             : (

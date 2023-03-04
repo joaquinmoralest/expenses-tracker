@@ -1,9 +1,9 @@
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 import Input from '../components/Input/Input'
+import Layout from '../components/Layout'
 import { setUserInfo } from '../redux/appSlice'
-import '../styles/Register.css'
 import { loginGoogle, registerAccount } from '../utils/auth'
 import { addIncomeToFirestore, addUserInfoToFirestore } from '../utils/service'
 
@@ -12,8 +12,8 @@ function Register () {
   const [password, setPassword] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const navigate = useNavigate()
   const dispatch = useDispatch()
+  const router = useRouter()
 
   async function handleSubmit (e) {
     e.preventDefault()
@@ -35,7 +35,7 @@ function Register () {
       date: new Date().toISOString().slice(0, 10)
     })
     dispatch(setUserInfo(userData))
-    navigate('/')
+    router.push('/')
   }
 
   async function registerWithGoogle () {
@@ -56,11 +56,11 @@ function Register () {
       date: new Date().toISOString().slice(0, 10)
     })
     dispatch(setUserInfo(userData))
-    navigate('/')
+    router.push('/')
   }
 
   return (
-    <>
+    <Layout>
       <div className='login'>
         <div className='login-container'>
           <div className='logo'>
@@ -96,7 +96,7 @@ function Register () {
           <button className='btn-register' onClick={registerWithGoogle}>Signin with Google</button>
         </div>
       </div>
-    </>
+    </Layout>
   )
 }
 
